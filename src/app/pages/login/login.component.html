@@ -1,4 +1,4 @@
-<div class="body">
+<body>
   <p-card>
     <ng-template pTemplate="header">
       <img
@@ -7,34 +7,28 @@
       />
     </ng-template>
 
-    <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="p-fluid">
         <div class="p-field">
           <label for="email">Usuário:</label>
           <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            [(ngModel)]="email"
+            email
             autofocus
             pInputText
-            id="email"
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            required
-            email
-            autocomplete="email"
           />
-          <div
-            *ngIf="loginForm.submitted && loginForm.controls['email']?.errors"
-          >
-            <small
-              class="p-error"
-              *ngIf="loginForm.controls['email']?.errors?.['required']"
-              >O e-mail é obrigatório.</small
-            >
-            <small
-              class="p-error"
-              *ngIf="loginForm.controls['email']?.errors?.['email']"
-              >E-mail inválido.</small
-            >
+          <div *ngIf="loginForm.submitted && loginForm.controls['email']?.errors">
+            <small class="p-error"*ngIf="loginForm.controls['email']?.errors?.['required']">
+              O e-mail é obrigatório.
+            </small>
+            <small class="p-error" *ngIf="loginForm.controls['email']?.errors?.['email']">
+              E-mail inválido.
+            </small>
           </div>
         </div>
 
@@ -42,43 +36,36 @@
           <label for="password">Senha:</label>
           <p-password
             id="password"
-            [toggleMask]="true"
-            [(ngModel)]="password"
             name="password"
             required
             minlength="8"
             autocomplete="current-password"
+            [toggleMask]="true"
+            [(ngModel)]="password"
             [feedback]="false"
-          ></p-password>
-          <div
-            *ngIf="
-              loginForm.submitted && loginForm.controls['password']?.errors
-            "
-          >
-            <small
-              class="p-error"
-              *ngIf="loginForm.controls['password']?.errors?.['required']"
-              >A senha é obrigatória.</small
-            >
-            <small
-              class="p-error"
-              *ngIf="loginForm.controls['password']?.errors?.['minlength']"
-              >A senha deve ter pelo menos 8 caracteres.</small
-            >
+          />
+          <div *ngIf=" loginForm.submitted && loginForm.controls['password']?.errors">
+            <small class="p-error" *ngIf="loginForm.controls['password']?.errors?.['required']">
+              A senha é obrigatória.
+            </small>
+            <small class="p-error"*ngIf="loginForm.controls['password']?.errors?.['minlength']">
+              A senha deve ter pelo menos 8 caracteres.
+            </small>
           </div>
         </div>
 
         <div class="p-field">
           <p-button
+            [disabled]="loginForm.invalid"
             type="submit"
             label="Confirmar"
             severity="success"
             [raised]="true"
             [rounded]="true"
-          ></p-button>
+          />
         </div>
       </div>
     </form>
   </p-card>
   <p-toast></p-toast>
-</div>
+</body>
