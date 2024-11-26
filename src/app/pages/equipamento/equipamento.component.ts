@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { MenuComponent } from '../menu/menu.component';
+import { Router } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { EquipamentoService } from '../../services/equipamento.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Router } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
+
+import { MenuComponent } from '../menu/menu.component';
+import { EquipamentoService } from '../../services/equipamento.service';
 import { EquipamentDto } from './equipamento.model';
 
 @Component({
@@ -23,9 +24,7 @@ import { EquipamentDto } from './equipamento.model';
     CardModule,
     CommonModule,
     MenuComponent,
-    //ButtonModule,
     DialogModule,
-    //FormsModule,
     ReactiveFormsModule,
     InputTextModule,
     ToastModule,
@@ -66,7 +65,6 @@ export class EquipamentoComponent {
       localStorage.getItem('permissions') || '[]'
     );
     this.hasPermission = userPermissions.includes('equipment:read');
-    console.log("🚀 ~ file: equipamento.component.ts:73 ~ EquipamentoComponent ~ ngOnInit ~ this.hasPermission:",typeof this.hasPermission);
 
     if (!this.hasPermission) {
       this.messageService.add({
@@ -83,15 +81,15 @@ export class EquipamentoComponent {
   }
 
   getEquipamento() {
-    this.equipamentoService.getAllEquipamento().subscribe(
-      (response) => {
+    this.equipamentoService.getAllEquipamento().subscribe({
+      next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
       }
-    );
+    });
   }
 
   openAddDialog() {
@@ -125,8 +123,8 @@ export class EquipamentoComponent {
 
   saveItem() {
     if (this.isEditMode) {
-      this.equipamentoService.updateEquipamento(this.selectedItem).subscribe(
-        (response) => {
+      this.equipamentoService.updateEquipamento(this.selectedItem).subscribe({
+        next: (response) => {
           const index = this.dados.findIndex(
             (d) => d.id === this.selectedItem.id
           );
@@ -140,7 +138,7 @@ export class EquipamentoComponent {
           }
           this.displayDialog = false;
         },
-        (error) => {
+        error: (error) => {
           console.error(error);
           this.messageService.add({
             severity: 'error',
@@ -148,10 +146,10 @@ export class EquipamentoComponent {
             detail: 'Erro ao atualizar equipamento',
           });
         }
-      );
+      });
     } else {
-      this.equipamentoService.createEquipamento(this.selectedItem).subscribe(
-        (response) => {
+      this.equipamentoService.createEquipamento(this.selectedItem).subscribe({
+        next: (response) => {
           this.dados.push(response);
           this.dadosOriginais.push(response);
           this.messageService.add({
@@ -161,7 +159,7 @@ export class EquipamentoComponent {
           });
           this.displayDialog = false;
         },
-        (error) => {
+        error: (error) => {
           console.error(error);
           this.messageService.add({
             severity: 'error',
@@ -169,7 +167,7 @@ export class EquipamentoComponent {
             detail: 'Erro ao adicionar equipamento',
           });
         }
-      );
+      });
     }
   }
 
@@ -240,8 +238,8 @@ export class EquipamentoComponent {
   }
 
   refreshData() {
-    this.equipamentoService.getAllEquipamento().subscribe(
-      (response) => {
+    this.equipamentoService.getAllEquipamento().subscribe({
+      next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
         this.filters = {};
@@ -255,7 +253,7 @@ export class EquipamentoComponent {
           detail: 'Página atualizada com sucesso',
         });
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
         this.messageService.add({
           severity: 'error',
@@ -263,6 +261,6 @@ export class EquipamentoComponent {
           detail: 'Erro ao atualizar página',
         });
       }
-    );
+    });
   }
 }

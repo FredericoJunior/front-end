@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { MenubarModule } from 'primeng/menubar';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+
+import { MenubarModule } from 'primeng/menubar';
+import { MenuItem } from 'primeng/api';
+
 import { AuthService } from './../../services/auth.service';
 
 @Component({
