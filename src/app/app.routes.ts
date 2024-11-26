@@ -6,6 +6,7 @@ import { RelatorioComponent } from './pages/relatorio/relatorio.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { OrdemServicoComponent } from './pages/ordem-servico/ordem-servico.component';
 import { UsuarioComponent } from './pages/usuario/usuario.component';
+import { NotificacaoComponent } from './pages/notificacao/notificacao.component'
 import { AuthGuard } from './guards/auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 
@@ -18,5 +19,6 @@ export const routes: Routes = [
   { path: 'ordem-servico', component: OrdemServicoComponent, canActivate: [AuthGuard, PermissionGuard], data: { permissions: ['workorder:read'] } },
   { path: 'relatorio', component: RelatorioComponent, canActivate: [AuthGuard, PermissionGuard], data: { permissions: ['report:read'] } },
   { path: 'usuario', component: UsuarioComponent, canActivate: [AuthGuard, PermissionGuard], data: { permissions: ['user:read'] } },
+  { path: 'notificacao', component: NotificacaoComponent, canActivate: [AuthGuard]},
   { path: '**', redirectTo: '/login' }
 ];

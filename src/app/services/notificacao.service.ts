@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class WebSocketService {
+export class NotificaoService {
   private apiUrl = 'v1/private/notification/';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
@@ -42,7 +42,7 @@ export class WebSocketService {
     );
   }
 
-  getNotificacao(): Observable<[]> {
+  getAllNotificacao(): Observable<[]> {
     return this.http
       .get<[]>(`${this.apiUrl}`, {
         headers: this.getHeaders(),
@@ -50,7 +50,7 @@ export class WebSocketService {
       .pipe(
         catchError((error) => {
           if (error.status === 401) {
-            return this.handle401Error(() => this.getNotificacao());
+            return this.handle401Error(() => this.getAllNotificacao());
           } else {
             return this.handleError(error);
           }

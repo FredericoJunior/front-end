@@ -1,0 +1,32 @@
+.body {
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 3.75rem;
+}
+
+.numeroOrdem {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.mini-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 !important;
+}
+
+.mini-card-buttons button {
+    margin-left: 0.75rem;
+}
+
+:host ::ng-deep {
+    .p-card .p-card-content {
+        padding: 0 !important;
+    }
+
+    .p-card .p-card-title {
+        margin-bottom: 1.5rem;
+    }
+}
