@@ -22,19 +22,5 @@ export class NotificacaoComponent {
   ) {}
 
   ngOnInit() {
-    // this.notificacaoService.getAllNotificacao().subscribe(
-    //   (response) => {
-    //     console.log(response);
-    //     this.notificacao = response;
-    //     console.log("🚀 ~ file: notificacao.component.ts:28 ~ NotificacaoComponent ~ ngOnInit ~ this.notificacao:", this.notificacao);
-    //   },
-    //   (error) => {
-    //     this.messageService.add({
-    //       severity: 'error',
-    //       summary: 'Erro',
-    //       detail: error.message,
-    //     });
-    //   }
-    // );
   }
 }

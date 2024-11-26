@@ -40,7 +40,7 @@ export class UserService {
     return throwError(() => new Error(errorMessage));
   }
 
-  private handle401Error(request: () => Observable<any>): Observable<any> {
+  private handle403Error(request: () => Observable<any>): Observable<any> {
     return this.authService.refreshToken().pipe(
       switchMap((tokens: any) => {
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -55,8 +55,8 @@ export class UserService {
     const url = search ? `${this.apiUrl}?search=${search}` : this.apiUrl;
     return this.http.get<UserDto[]>(url, { headers: this.getHeaders() }).pipe(
       catchError((error) => {
-        if (error.status === 401) {
-          return this.handle401Error(() => this.getAllUsuarios(search));
+        if (error.status === 403) {
+          return this.handle403Error(() => this.getAllUsuarios(search));
         } else {
           return this.handleError(error);
         }
@@ -71,8 +71,8 @@ export class UserService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.createUsuario(registerDto));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.createUsuario(registerDto));
           } else {
             return this.handleError(error);
           }
@@ -85,8 +85,8 @@ export class UserService {
       .put<UserDto>(this.apiUrl, userDto, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.updateUsuario(userDto));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.updateUsuario(userDto));
           } else {
             return this.handleError(error);
           }
@@ -99,8 +99,8 @@ export class UserService {
       .delete<void>(`${this.apiUrl}${id}`, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.deleteUsuario(id));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.deleteUsuario(id));
           } else {
             return this.handleError(error);
           }
@@ -113,8 +113,8 @@ export class UserService {
       .get<string[]>(`${this.apiUrl}roles`, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getAllFuncoes());
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getAllFuncoes());
           } else {
             return this.handleError(error);
           }
@@ -127,8 +127,8 @@ export class UserService {
       .put<UserDto>(`${this.apiUrl}role`, updateDto, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.updateFuncao(updateDto));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.updateFuncao(updateDto));
           } else {
             return this.handleError(error);
           }
@@ -141,8 +141,8 @@ export class UserService {
       .get<UserDto[]>(`${this.apiUrl}mechanics`, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getMecanicos());
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getMecanicos());
           } else {
             return this.handleError(error);
           }

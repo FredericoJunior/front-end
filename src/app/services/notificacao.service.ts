@@ -31,7 +31,7 @@ export class NotificaoService {
     return throwError(() => new Error(errorMessage));
   }
 
-  private handle401Error(request: () => Observable<any>): Observable<any> {
+  private handle403Error(request: () => Observable<any>): Observable<any> {
     return this.authService.refreshToken().pipe(
       switchMap((tokens: any) => {
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -49,8 +49,8 @@ export class NotificaoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getAllNotificacao());
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getAllNotificacao());
           } else {
             return this.handleError(error);
           }
@@ -65,8 +65,8 @@ export class NotificaoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getNotificacaoId(id));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getNotificacaoId(id));
           } else {
             return this.handleError(error);
           }

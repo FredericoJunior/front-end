@@ -36,7 +36,7 @@ export class EquipamentoService {
     return throwError(() => new Error(errorMessage));
   }
 
-  private handle401Error(request: () => Observable<any>): Observable<any> {
+  private handle403Error(request: () => Observable<any>): Observable<any> {
     return this.authService.refreshToken().pipe(
       switchMap((tokens: any) => {
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -54,8 +54,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getEquipamentoId(id));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getEquipamentoId(id));
           } else {
             return this.handleError(error);
           }
@@ -70,8 +70,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.getAllEquipamento());
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getAllEquipamento());
           } else {
             return this.handleError(error);
           }
@@ -86,8 +86,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.createEquipamento(dto));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.createEquipamento(dto));
           } else {
             return this.handleError(error);
           }
@@ -102,8 +102,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.updateEquipamento(dto));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.updateEquipamento(dto));
           } else {
             return this.handleError(error);
           }
@@ -118,8 +118,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() => this.deleteEquipamento(id));
+          if (error.status === 403) {
+            return this.handle403Error(() => this.deleteEquipamento(id));
           } else {
             return this.handleError(error);
           }
@@ -134,8 +134,8 @@ export class EquipamentoService {
       })
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            return this.handle401Error(() =>
+          if (error.status === 403) {
+            return this.handle403Error(() =>
               this.getEquipamentoQrCode(qrCode)
             );
           } else {

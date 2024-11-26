@@ -36,7 +36,7 @@ export class OrdemServicoService {
     return throwError(() => new Error(errorMessage));
   }
 
-  handle401Error(request: () => Observable<any>): Observable<any> {
+  handle403Error(request: () => Observable<any>): Observable<any> {
     return this.authService.refreshToken().pipe(
       switchMap((tokens: any) => {
         localStorage.setItem('accessToken', tokens.accessToken);
@@ -52,8 +52,8 @@ export class OrdemServicoService {
       headers: this.getHeaders(),
     }).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.handle401Error(() => this.getOrdemServicoId(id));
+        if (error.status === 403) {
+          return this.handle403Error(() => this.getOrdemServicoId(id));
         } else {
           return this.handleError(error);
         }
@@ -66,8 +66,8 @@ export class OrdemServicoService {
       headers: this.getHeaders(),
     }).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.handle401Error(() => this.getAllOrdemServico());
+        if (error.status === 403) {
+          return this.handle403Error(() => this.getAllOrdemServico());
         } else {
           return this.handleError(error);
         }
@@ -80,8 +80,8 @@ export class OrdemServicoService {
       headers: this.getHeaders(),
     }).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.handle401Error(() => this.createOrdemServico(dto));
+        if (error.status === 403) {
+          return this.handle403Error(() => this.createOrdemServico(dto));
         } else {
           return this.handleError(error);
         }
@@ -94,8 +94,8 @@ export class OrdemServicoService {
       headers: this.getHeaders(),
     }).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.handle401Error(() => this.updateOrdemServico(dto));
+        if (error.status === 403) {
+          return this.handle403Error(() => this.updateOrdemServico(dto));
         } else {
           return this.handleError(error);
         }
