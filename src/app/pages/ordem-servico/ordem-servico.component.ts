@@ -1,23 +1,24 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { CommonModule } from "@angular/common";
+import { ReactiveFormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+
 import { TableModule } from "primeng/table";
-import { MenuComponent } from "../menu/menu.component";
 import { CardModule } from "primeng/card";
-import { ButtonModule } from "primeng/button";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { DialogModule } from "primeng/dialog";
 import { InputTextModule } from "primeng/inputtext";
-import { OrdemServicoService } from "../../services/ordem-servico.service";
 import { ConfirmationService, MessageService } from "primeng/api";
-import { ToastModule } from "primeng/toast";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { Router } from "@angular/router";
-import { EquipamentoService } from '../../services/equipamento.service';
-import { DropdownModule } from 'primeng/dropdown';
-import { UserService } from "../../services/user.service";
 import { CalendarModule } from 'primeng/calendar';
-import { WorkOrderDto, WorkOrderCreateDto } from './ordem-servico.model';
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { ToastModule } from "primeng/toast";
+import { DropdownModule } from 'primeng/dropdown';
+
+import { MenuComponent } from "../menu/menu.component";
+import { OrdemServicoService } from "../../services/ordem-servico.service";
+import { EquipamentoService } from '../../services/equipamento.service';
+import { UserService } from "../../services/user.service";
+import { WorkOrderDto } from './ordem-servico.model';
 import { EquipamentDto } from '../equipamento/equipamento.model';
 import { UserDto } from '../usuario/usuario.model';
 
@@ -29,9 +30,7 @@ import { UserDto } from '../usuario/usuario.model';
     CardModule,
     CommonModule,
     MenuComponent,
-    //ButtonModule,
     DialogModule,
-    //FormsModule,
     ReactiveFormsModule,
     InputTextModule,
     ToastModule,
@@ -133,36 +132,36 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   refreshData() {
-    this.ordemServicoService.getAllOrdemServico().subscribe(
-      (data) => {
+    this.ordemServicoService.getAllOrdemServico().subscribe({
+      next: (data) => {
         this.dados = data;
       },
-      (error) => {
+      error: () => {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar dados' });
       }
-    );
+    });
   }
 
   getEquipament() {
-    this.equipamentoService.getAllEquipamento().subscribe(
-      (response) => {
+    this.equipamentoService.getAllEquipamento().subscribe({
+      next: (response) => {
         this.equipamento = response;
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
       }
-    );
+    });
   }
 
   getUser() {
-    this.usuarioService.getAllUsuarios().subscribe(
-      (response) => {
+    this.usuarioService.getAllUsuarios().subscribe({
+      next: (response) => {
         this.user = response;
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
       }
-    );
+    });
   }
 
   applyFilter(event: Event, field: string) {

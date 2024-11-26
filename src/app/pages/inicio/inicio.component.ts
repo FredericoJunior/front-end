@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { MenuComponent } from '../menu/menu.component';
+
 import { CardModule } from 'primeng/card';
 import { MessageService } from 'primeng/api';
+
+import { MenuComponent } from '../menu/menu.component';
 
 @Component({
   selector: 'app-inicio',
@@ -14,9 +16,7 @@ import { MessageService } from 'primeng/api';
 export class InicioComponent {
   usuarioLogado: string;
 
-  constructor(
-    private messageService: MessageService
-  ) {
+  constructor() {
     const userName = localStorage.getItem('userName');
     this.usuarioLogado = userName ? userName : 'Usuário';
   }
