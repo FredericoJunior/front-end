@@ -1,24 +1,25 @@
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { TableModule } from "primeng/table";
-import { MenuComponent } from "../menu/menu.component";
+import { Router } from "@angular/router";
+
 import { CardModule } from "primeng/card";
-import { ButtonModule } from "primeng/button";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { TableModule } from "primeng/table";
 import { DialogModule } from "primeng/dialog";
 import { InputTextModule } from "primeng/inputtext";
-import { UserService } from "../../services/user.service";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { ToastModule } from "primeng/toast";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { DropdownModule } from 'primeng/dropdown';
-import { Router } from "@angular/router";
 import { PasswordModule } from 'primeng/password';
+import { DropdownModule } from 'primeng/dropdown';
+
+import { MenuComponent } from "../menu/menu.component";
+
+import { UserService } from "../../services/user.service";
 import {
   RegisterDto,
-  UserDto,
-  UserRoleUpdateDto,
+  UserDto
 } from './usuario.model';
 
 @Component({
@@ -29,9 +30,7 @@ import {
     CardModule,
     CommonModule,
     MenuComponent,
-    //ButtonModule,
     DialogModule,
-    //FormsModule,
     ReactiveFormsModule,
     InputTextModule,
     ToastModule,
@@ -87,24 +86,24 @@ export class UsuarioComponent {
       this.router.navigate(['/inicio']);
     }
     
-    this.usuarioService.getAllUsuarios().subscribe(
-      (response) => {
+    this.usuarioService.getAllUsuarios().subscribe({
+      next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
       }
-    );
+    });
 
-    this.usuarioService.getAllFuncoes().subscribe(
-      (response) => {
+    this.usuarioService.getAllFuncoes().subscribe({
+      next: (response) => {
         this.roles = response;
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
       }
-    );
+    });
   }
 
   openAddDialog() {
@@ -138,8 +137,8 @@ export class UsuarioComponent {
 
   saveItem() {
     if (this.isEditMode) {
-      this.usuarioService.updateUsuario(this.selectedItem).subscribe(
-        (response) => {
+      this.usuarioService.updateUsuario(this.selectedItem).subscribe({
+        next: (response) => {
           const index = this.dados.findIndex(
             (d) => d.id === this.selectedItem.id
           );
@@ -153,7 +152,7 @@ export class UsuarioComponent {
           }
           this.displayDialog = false;
         },
-        (error) => {
+        error: (error) => {
           console.error(error);
           this.messageService.add({
             severity: "error",
@@ -161,7 +160,7 @@ export class UsuarioComponent {
             detail: "Erro ao atualizar usuário",
           });
         }
-      );
+      });
     } else {
       const registerDto: RegisterDto = {
         name: this.selectedItem.name,
@@ -169,8 +168,8 @@ export class UsuarioComponent {
         password: this.selectedItem.password!,
         role: this.selectedItem.role,
       };
-      this.usuarioService.createUsuario(registerDto).subscribe(
-        (response) => {
+      this.usuarioService.createUsuario(registerDto).subscribe({
+        next: (response) => {
           this.dados.push(response);
           this.dadosOriginais.push(response);
           this.messageService.add({
@@ -180,7 +179,7 @@ export class UsuarioComponent {
           });
           this.displayDialog = false;
         },
-        (error) => {
+        error: (error) => {
           console.error(error);
           this.messageService.add({
             severity: "error",
@@ -188,7 +187,7 @@ export class UsuarioComponent {
             detail: "Erro ao adicionar usuário",
           });
         }
-      );
+      });
     }
   }
 
@@ -217,8 +216,8 @@ export class UsuarioComponent {
   }
 
   deleteItem(item: UserDto) {
-    this.usuarioService.deleteUsuario(item.id).subscribe(
-      () => {
+    this.usuarioService.deleteUsuario(item.id).subscribe({
+      next: () => {
         this.dados = this.dados.filter((d) => d.id !== item.id);
         this.dadosOriginais = this.dadosOriginais.filter((d) => d.id !== item.id);
         this.messageService.add({
@@ -227,7 +226,7 @@ export class UsuarioComponent {
           detail: "Usuário deletado",
         });
       },
-      (error) => {
+     error:  (error) => {
         console.error(error);
         this.messageService.add({
           severity: "error",
@@ -235,7 +234,7 @@ export class UsuarioComponent {
           detail: "Erro ao deletar usuário",
         });
       }
-    );
+    });
   }
 
   applyFilter(event: Event, field: string) {
@@ -249,8 +248,8 @@ export class UsuarioComponent {
   }
 
   refreshData() {
-    this.usuarioService.getAllUsuarios().subscribe(
-      (response) => {
+    this.usuarioService.getAllUsuarios().subscribe({
+      next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
         this.filters = {};
@@ -262,7 +261,7 @@ export class UsuarioComponent {
           detail: "Página atualizada com sucesso",
         });
       },
-      (error) => {
+      error: (error) => {
         console.error(error);
         this.messageService.add({
           severity: "error",
@@ -270,6 +269,6 @@ export class UsuarioComponent {
           detail: "Erro ao atualizar página",
         });
       }
-    );
+    });
   }
 }
