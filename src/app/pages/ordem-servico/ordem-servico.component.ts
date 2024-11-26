@@ -44,6 +44,8 @@ import { UserDto } from '../usuario/usuario.model';
 })
 export class OrdemServicoComponent implements OnInit {
   dados: WorkOrderDto[] = [];
+  dadosOriginais: WorkOrderDto[] = [];
+  filters: { [key: string]: string } = {};
   ordemServicoForm: FormGroup;
   workOrderForm: FormGroup;
   closingForm: FormGroup;
@@ -133,6 +135,7 @@ export class OrdemServicoComponent implements OnInit {
     this.ordemServicoService.getAllOrdemServico().subscribe({
       next: (data) => {
         this.dados = data;
+        this.dadosOriginais = [...data];
       },
       error: () => {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar dados' });
@@ -231,7 +234,17 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   applyFilter(event: Event, field: string) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dados = this.dados.filter((item: any) => item[field].toString().toLowerCase().includes(filterValue.toLowerCase()));
+    const input = event.target as HTMLInputElement;
+    this.filters[field] = input.value.toLowerCase();
+    this.dados = this.dadosOriginais.filter((item: any) => {
+      return Object.keys(this.filters).every((key) => {
+        const keys = key.split('.');
+        let value = item;
+        for (const k of keys) {
+          value = value?.[k];
+        }
+        return value?.toString().toLowerCase().includes(this.filters[key]);
+      });
+    });
   }
 }
