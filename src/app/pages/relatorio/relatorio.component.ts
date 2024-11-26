@@ -32,6 +32,7 @@ import { MenuComponent } from '../menu/menu.component';
 export class RelatorioComponent {
   relatorioForm: FormGroup;
   hasPermission: boolean = false;
+  canRead: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -46,6 +47,11 @@ export class RelatorioComponent {
       custos: [true],
       status: [true],
     });
+
+    const userPermissions = JSON.parse(
+      localStorage.getItem('permissions') || '[]'
+    );
+    this.canRead = userPermissions.includes('report:read');
   }
 
   ngOnInit() {
@@ -81,11 +87,16 @@ export class RelatorioComponent {
     }
   }
 
-  onCancel() {
-    this.relatorioForm.reset();
-  }
-
   downloadExcelReport() {
+    if (!this.canRead) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Você não tem permissão para executar essa ação.',
+      });
+      this.router.navigate(['/inicio']);
+    }
+
     this.registroService.getRelatorioExcel().subscribe({
       next: (response) => {
         const url = window.URL.createObjectURL(response);
@@ -112,6 +123,15 @@ export class RelatorioComponent {
   }
 
   downloadPdfReport() {
+    if (!this.canRead) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Você não tem permissão para executar essa ação.',
+      });
+      this.router.navigate(['/inicio']);
+    }
+
     this.registroService.getRelatorioPdf().subscribe({
       next: (response) => {
         const url = window.URL.createObjectURL(response);

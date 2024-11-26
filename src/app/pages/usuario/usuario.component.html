@@ -7,7 +7,7 @@
         pButton
         pRipple
         icon="pi pi-refresh"
-        (click)="refreshData()"
+        (click)="getUsuarios()"
         label="Atualizar"
       ></button>
       <button
@@ -75,7 +75,7 @@
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger p-button-sm"
               title="Deletar Usuário"
-              (click)="confirm2($event, item)"
+              (click)="confirmacao($event, item)"
             ></button>
           </td>
         </tr>

@@ -104,21 +104,10 @@ export class OrdemServicoComponent implements OnInit {
       localStorage.getItem('permissions') || '[]'
     );
     this.hasPermission = userPermissions.includes('workorder:read');
-
-    if (!this.hasPermission) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Você não tem permissão para acessar esta página.',
-      });
-      this.router.navigate(['/inicio']);
-    }
   }
 
   ngOnInit() {
-
-    
-    this.refreshData();
+    this.getOrdemServico();
     this.getEquipament();
     this.getUser();
   }
@@ -131,7 +120,16 @@ export class OrdemServicoComponent implements OnInit {
     this.userSelecionado = event.value;
   }
 
-  refreshData() {
+  getOrdemServico() {
+    if (!this.hasPermission) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Você não tem permissão para acessar esta página.',
+      });
+      this.router.navigate(['/inicio']);
+    }
+
     this.ordemServicoService.getAllOrdemServico().subscribe({
       next: (data) => {
         this.dados = data;
@@ -162,11 +160,6 @@ export class OrdemServicoComponent implements OnInit {
         console.error(error);
       }
     });
-  }
-
-  applyFilter(event: Event, field: string) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dados = this.dados.filter((item: any) => item[field].toString().toLowerCase().includes(filterValue.toLowerCase()));
   }
 
   openAddDialog() {
@@ -215,7 +208,7 @@ export class OrdemServicoComponent implements OnInit {
     //     this.ordemServicoService.update(workOrderDto).subscribe(
     //       () => {
     //         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de Serviço atualizada' });
-    //         this.refreshData();
+    //         this.getOrdemServico();
     //         this.displayDialog = false;
     //       },
     //       (error) => {
@@ -226,7 +219,7 @@ export class OrdemServicoComponent implements OnInit {
     //     this.ordemServicoService.create(ordemServico).subscribe(
     //       () => {
     //         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de Serviço adicionada' });
-    //         this.refreshData();
+    //         this.getOrdemServico();
     //         this.displayDialog = false;
     //       },
     //       (error) => {
@@ -235,5 +228,10 @@ export class OrdemServicoComponent implements OnInit {
     //     );
     //   }
     // }
+  }
+
+  applyFilter(event: Event, field: string) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dados = this.dados.filter((item: any) => item[field].toString().toLowerCase().includes(filterValue.toLowerCase()));
   }
 }

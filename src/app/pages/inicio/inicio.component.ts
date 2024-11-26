@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 import { CardModule } from 'primeng/card';
-import { MessageService } from 'primeng/api';
 
 import { MenuComponent } from '../menu/menu.component';
 
@@ -11,7 +10,6 @@ import { MenuComponent } from '../menu/menu.component';
   imports: [MenuComponent, CardModule],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.scss',
-  providers: [MessageService],
 })
 export class InicioComponent {
   usuarioLogado: string;

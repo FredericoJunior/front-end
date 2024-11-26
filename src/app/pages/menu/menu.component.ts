@@ -28,25 +28,25 @@ export class MenuComponent implements OnInit {
     this.items = [
       {
         label: 'Ordem de Serviço',
-        icon: 'pi pi-briefcase', // Ícone de pasta de trabalho
+        icon: 'pi pi-briefcase',
         route: '/ordem-servico',
         permission: 'workorder:read',
       },
       {
         label: 'Equipamentos',
-        icon: 'pi pi-cog', // Ícone de engrenagem
+        icon: 'pi pi-cog',
         route: '/equipamento',
         permission: 'equipment:read',
       },
       {
         label: 'Usuários',
-        icon: 'pi pi-users', // Ícone de usuários
+        icon: 'pi pi-users',
         route: '/usuario',
         permission: 'user:read',
       },
       {
         label: 'Relatórios',
-        icon: 'pi pi-chart-line', // Ícone de gráfico de linha
+        icon: 'pi pi-chart-line',
         route: '/relatorio',
         permission: 'report:read',
       },
@@ -57,12 +57,12 @@ export class MenuComponent implements OnInit {
       // },
       {
         label: 'Notificações',
-        icon: 'pi pi-bell', // Ícone de sino
+        icon: 'pi pi-bell',
         route: '/notificacao',
       },
       {
         label: 'Logout',
-        icon: 'pi pi-user', // Ícone de usuário
+        icon: 'pi pi-user',
         command: () => this.logout(),
       },
     ].filter(item => !item.permission || userPermissions.includes(item.permission));

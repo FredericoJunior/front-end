@@ -7,7 +7,7 @@
         pButton
         pRipple
         icon="pi pi-refresh"
-        (click)="refreshData()"
+        (click)="getEquipamento()"
         label="Atualizar"
       ></button>
       <button
@@ -76,7 +76,7 @@
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger p-button-sm"
               title="Deletar Equipamento"
-              (click)="confirm2($event, item)"
+              (click)="confirmacao($event, item)"
             ></button>
           </td>
         </tr>
@@ -110,7 +110,7 @@
               equipamentoForm.controls['number'].touched)
           "
         >
-          <small class="p-error">Nome do Equipamento é obrigatório.</small>
+          <small class="p-error">Nome do Equipamento é obrigatório e deve ter no máximo 100 caracteres.</small>
         </div>
       </div>
       <div class="formulario">
@@ -129,26 +129,7 @@
               equipamentoForm.controls['ownership'].touched)
           "
         >
-          <small class="p-error">Origem é obrigatória.</small>
-        </div>
-      </div>
-      <div class="formulario">
-        <label for="qrCode" class="font-semibold w-6rem">QR Code: </label>
-        <input
-          pInputText
-          id="qrCode"
-          class="flex-auto"
-          formControlName="qrCode"
-          autocomplete="off"
-        />
-        <div
-          *ngIf="
-            equipamentoForm.controls['qrCode'].invalid &&
-            (equipamentoForm.controls['qrCode'].dirty ||
-              equipamentoForm.controls['qrCode'].touched)
-          "
-        >
-          <small class="p-error">QR Code é obrigatório.</small>
+          <small class="p-error">Origem é obrigatória e deve ter no máximo 20 caracteres.</small>
         </div>
       </div>
       <div class="buttons">

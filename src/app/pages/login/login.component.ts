@@ -37,7 +37,7 @@ export class LoginComponent {
     private router: Router,
     private messageService: MessageService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   onSubmit() {
     const authenticationDto: AuthenticationDto = {

@@ -45,35 +45,32 @@ export class EquipamentoComponent {
   globalFilterFields: string[] = ['id', 'number', 'ownership', 'qrCode'];
   filters: { [key: string]: string } = {};
 
-  hasPermission: boolean;
+  canRead: boolean;
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
 
   constructor(
     private fb: FormBuilder,
     private equipamentoService: EquipamentoService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private router: Router,
+    private router: Router
   ) {
     this.equipamentoForm = this.fb.group({
       id: [null],
-      number: ['', Validators.required],
-      ownership: ['', Validators.required],
-      qrCode: ['', Validators.required],
+      number: ['', [Validators.required, Validators.maxLength(100)]],
+      ownership: ['', [Validators.required, Validators.maxLength(20)]],
+      qrCode: [''],
     });
 
     const userPermissions = JSON.parse(
       localStorage.getItem('permissions') || '[]'
     );
-    this.hasPermission = userPermissions.includes('equipment:read');
-
-    if (!this.hasPermission) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Você não tem permissão para acessar esta página.',
-      });
-      this.router.navigate(['/inicio']);
-    }
+    this.canRead = userPermissions.includes('equipment:read');
+    this.canCreate = userPermissions.includes('equipment:create');
+    this.canUpdate = userPermissions.includes('equipment:update');
+    this.canDelete = userPermissions.includes('equipment:delete');
   }
 
   ngOnInit() {
@@ -81,6 +78,15 @@ export class EquipamentoComponent {
   }
 
   getEquipamento() {
+    if (!this.canRead) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Você não tem permissão para acessar esta página.',
+      });
+      this.router.navigate(['/inicio']);
+    }
+
     this.equipamentoService.getAllEquipamento().subscribe({
       next: (response) => {
         this.dados = response;
@@ -88,7 +94,7 @@ export class EquipamentoComponent {
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
 
@@ -123,6 +129,15 @@ export class EquipamentoComponent {
 
   saveItem() {
     if (this.isEditMode) {
+      if (!this.canUpdate) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Você não tem permissão para atualizar equipamentos.',
+        });
+        return;
+      }
+
       this.equipamentoService.updateEquipamento(this.selectedItem).subscribe({
         next: (response) => {
           const index = this.dados.findIndex(
@@ -145,9 +160,18 @@ export class EquipamentoComponent {
             summary: 'Erro',
             detail: 'Erro ao atualizar equipamento',
           });
-        }
+        },
       });
     } else {
+      if (!this.canCreate) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Você não tem permissão para adicionar equipamentos.',
+        });
+        return;
+      }
+
       this.equipamentoService.createEquipamento(this.selectedItem).subscribe({
         next: (response) => {
           this.dados.push(response);
@@ -166,12 +190,12 @@ export class EquipamentoComponent {
             summary: 'Erro',
             detail: 'Erro ao adicionar equipamento',
           });
-        }
+        },
       });
     }
   }
 
-  confirm2(event: Event, item: EquipamentDto) {
+  confirmacao(event: Event, item: EquipamentDto) {
     this.selectedItem = item;
     this.confirmationService.confirm({
       target: event.target as EventTarget,
@@ -196,7 +220,19 @@ export class EquipamentoComponent {
   }
 
   deleteItem(item: EquipamentDto) {
-    if (typeof item.id === 'number' && item.id !== null && item.id !== undefined) {
+    if (
+      typeof item.id === 'number' &&
+      item.id !== null &&
+      item.id !== undefined
+    ) {
+      if (!this.canDelete) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Você não tem permissão para deletar equipamentos.',
+        });
+        return;
+      }
       this.equipamentoService.deleteEquipamento(item.id).subscribe(
         () => {
           this.dados = this.dados.filter((d) => d.id !== item.id);
@@ -234,33 +270,6 @@ export class EquipamentoComponent {
       return Object.keys(this.filters).every((key) => {
         return item[key].toString().toLowerCase().includes(this.filters[key]);
       });
-    });
-  }
-
-  refreshData() {
-    this.equipamentoService.getAllEquipamento().subscribe({
-      next: (response) => {
-        this.dados = response;
-        this.dadosOriginais = [...response];
-        this.filters = {};
-        const filterInputs = document.querySelectorAll('.header-table input');
-        filterInputs.forEach(
-          (input) => ((input as HTMLInputElement).value = '')
-        );
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Página atualizada com sucesso',
-        });
-      },
-      error: (error) => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao atualizar página',
-        });
-      }
     });
   }
 }
