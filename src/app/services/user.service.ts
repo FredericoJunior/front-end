@@ -136,13 +136,13 @@ export class UserService {
       );
   }
 
-  getMecanicos(): Observable<UserDto[]> {
+  getAllMecanicos(): Observable<UserDto[]> {
     return this.http
       .get<UserDto[]>(`${this.apiUrl}mechanics`, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
-            return this.handle403Error(() => this.getMecanicos());
+            return this.handle403Error(() => this.getAllMecanicos());
           } else {
             return this.handleError(error);
           }

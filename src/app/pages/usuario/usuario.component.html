@@ -126,7 +126,12 @@
               usuarioForm.controls['name'].touched)
           "
         >
-          <small class="p-error">Nome é obrigatório.</small>
+          <small class="p-error" *ngIf="usuarioForm.controls['name'].errors?.['required']">
+            Nome é obrigatório.
+          </small>
+          <small class="p-error" *ngIf="usuarioForm.controls['name'].errors?.['maxlength']">
+            Nome deve ter no máximo 100 caracteres.
+          </small>
         </div>
       </div>
       <div class="formulario">
@@ -147,8 +152,15 @@
               usuarioForm.controls['login'].touched)
           "
         >
-          <small class="p-error">Login é obrigatório.</small>
-          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['email']">E-mail inválido.</small>
+          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['required']">
+            Login é obrigatório.
+          </small>
+          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['email']">
+            E-mail inválido.
+          </small>
+          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['maxlength']">
+            Login deve ter no máximo 50 caracteres.
+          </small>
         </div>
       </div>
       <div class="formulario">
@@ -169,8 +181,14 @@
               usuarioForm.controls['password'].touched)
           "
         >
+          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['required']">
+            Senha é obrigatória.
+          </small>
           <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['minlength']">
             A senha deve ter pelo menos 8 caracteres.
+          </small>
+          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['maxlength']">
+            Senha deve ter no máximo 100 caracteres.
           </small>
         </div>
       </div>

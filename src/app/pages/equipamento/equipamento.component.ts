@@ -91,6 +91,12 @@ export class EquipamentoComponent {
       next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Todos os dados foram carregados com sucesso.',
+        });
       },
       error: (error) => {
         console.error(error);

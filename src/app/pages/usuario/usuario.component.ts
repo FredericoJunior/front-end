@@ -65,10 +65,10 @@ export class UsuarioComponent {
   ) {
     this.usuarioForm = this.fb.group({
       id: [null],
-      name: ['', Validators.required],
-      login: ['', Validators.required],
-      role: ['', Validators.required],
-      password: ['', Validators.required],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
+      login: ['', [Validators.required, Validators.maxLength(50)]],
+      role: ['', [Validators.required, Validators.maxLength(50)]],
+      password: ['', [Validators.required, Validators.maxLength(100)]],
     });
 
     const userPermissions = JSON.parse(
@@ -99,6 +99,12 @@ export class UsuarioComponent {
       next: (response) => {
         this.dados = response;
         this.dadosOriginais = [...response];
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Todos os dados foram carregados com sucesso.',
+        });
       },
       error: (error) => {
         console.error(error);

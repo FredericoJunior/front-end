@@ -18,7 +18,7 @@ import { MenuComponent } from "../menu/menu.component";
 import { OrdemServicoService } from "../../services/ordem-servico.service";
 import { EquipamentoService } from '../../services/equipamento.service';
 import { UserService } from "../../services/user.service";
-import { WorkOrderDto } from './ordem-servico.model';
+import { WorkOrderCreateDto, WorkOrderDto } from './ordem-servico.model';
 import { EquipamentDto } from '../equipamento/equipamento.model';
 import { UserDto } from '../usuario/usuario.model';
 
@@ -47,15 +47,24 @@ export class OrdemServicoComponent implements OnInit {
   dadosOriginais: WorkOrderDto[] = [];
   filters: { [key: string]: string } = {};
   ordemServicoForm: FormGroup;
-  workOrderForm: FormGroup;
   closingForm: FormGroup;
   displayDialog: boolean = false;
+  displayCompleteDialog: boolean = false;
   dialogTitle: string = '';
   hasPermission: boolean;
   equipamento: EquipamentDto[] = [];
   equipamentoSelecionado: EquipamentDto | null = null;
   user: UserDto[] = [];
   userSelecionado: UserDto | null = null;
+  mecanicos: any | any[] = [];
+  orderStatusOptions: any[] = [
+    { label: 'ABERTO', value: 'ABERTO' },
+    { label: 'EMANDAMENTO', value: 'EMANDAMENTO' },
+    { label: 'FECHADA', value: 'FECHADA' },
+  ]
+
+  selectedWorkOrderId: number | null = null;
+  selectedStatus: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -67,39 +76,27 @@ export class OrdemServicoComponent implements OnInit {
   ) {
     this.ordemServicoForm = this.fb.group({
       id: [null],
-      equipament: ['', Validators.required],
       orderStatus: ['', Validators.required],
       requestedServicesDescription: ['', Validators.required],
       requesterName: ['', Validators.required],
       issueDate: ['', Validators.required],
-      equipamentId: [null],
+      equipamentId: ['', Validators.required],
       hourMeter: ['', Validators.required],
     });
 
-    this.workOrderForm = this.fb.group({
-      equipamentNumber: [{ value: '', disabled: true }, Validators.required],
-      orderStatus: ['', Validators.required],
-      maintenanceLocation: [''],
-      hourMeter: [''],
-      requestedServicesDescription: ['', Validators.required],
-      completedServicesDescription: [''],
-      pendingServicesDescription: [''],
-      responsibleMechanics: ['', Validators.required],
-      requester: [{ value: '', disabled: true }, Validators.required],
-      issueDate: [{ value: '', disabled: true }, Validators.required]
-    });
-
     this.closingForm = this.fb.group({
+      orderStatus: ['', Validators.required],
+      responsibleMechanics: ['', Validators.required],
       quantity15w40: [0.00, Validators.min(0)],
       quantityAw68: [0.00, Validators.min(0)],
       quantity428: [0.00, Validators.min(0)],
       quantity80W: [0.00, Validators.min(0)],
       quantity85w90: [0.00, Validators.min(0)],
-      closingLaborValue: [0.00, Validators.min(0)],
-      closingTransportation: [0.00, Validators.min(0)],
-      closingThirdParties: [0.00, Validators.min(0)],
-      closingOils: [0.00, Validators.min(0)],
-      closingTotal: [{ value: 0.00, disabled: true }, Validators.min(0)]
+      laborValue: [0.00, Validators.min(0)],
+      transportation: [0.00, Validators.min(0)],
+      thirdParties: [0.00, Validators.min(0)],
+      oils: [0.00, Validators.min(0)],
+      total: [{ value: 0.00, disabled: true }, Validators.min(0)]
     });
 
     const userPermissions = JSON.parse(
@@ -112,6 +109,7 @@ export class OrdemServicoComponent implements OnInit {
     this.getOrdemServico();
     this.getEquipament();
     this.getUser();
+    this.getMecanicos();
   }
   
   onEquipamentChange(event: any) {
@@ -136,6 +134,12 @@ export class OrdemServicoComponent implements OnInit {
       next: (data) => {
         this.dados = data;
         this.dadosOriginais = [...data];
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Todos os dados foram carregados com sucesso.',
+        });
       },
       error: () => {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar dados' });
@@ -165,72 +169,126 @@ export class OrdemServicoComponent implements OnInit {
     });
   }
 
+  getMecanicos() {
+    this.usuarioService.getAllMecanicos().subscribe({
+      next: (response) => {
+        this.mecanicos = response.map((m) => m.name);
+        console.log("🚀 ~ file: ordem-servico.component.ts:169 ~ OrdemServicoComponent ~ this.usuarioService.getAllMecanicos ~ this.mecanicos:", this.mecanicos);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
+
   openAddDialog() {
     this.dialogTitle = 'Adicionar Ordem de Serviço';
     this.ordemServicoForm.reset();
     this.displayDialog = true;
   }
 
-  openEditDialog(item: WorkOrderDto) {
-    this.dialogTitle = 'Editar Ordem de Serviço';
-    this.ordemServicoForm.patchValue({
-      id: item.id,
-      equipamentNumber: item.equipament.number,
-      orderStatus: item.orderStatus,
-      requestedServicesDescription: item.requestedServicesDescription,
-      requesterName: item.requester.name,
-      issueDate: item.issueDate
+  openCompleteDialog(item: WorkOrderDto) {
+    this.dialogTitle = 'Concluir Ordem de Serviço';
+    this.selectedWorkOrderId = item.id;
+    this.selectedStatus = item.orderStatus;
+    this.closingForm.patchValue({
+      quantity15w40: item.closing?.quantity15w40 || 0.00,
+      quantityAw68: item.closing?.quantityAw68 || 0.00,
+      quantity428: item.closing?.quantity428 || 0.00,
+      quantity80W: item.closing?.quantity80W || 0.00,
+      quantity85w90: item.closing?.quantity85w90 || 0.00,
+      laborValue: item.closing?.laborValue || 0.00,
+      transportation: item.closing?.transportation || 0.00,
+      thirdParties: item.closing?.thirdParties || 0.00,
+      oils: item.closing?.oils || 0.00,
+      total: item.closing?.total || 0.00
     });
-    this.displayDialog = true;
+    this.displayCompleteDialog = true;
   }
 
   onSubmit() {
-    // if (this.ordemServicoForm.valid) {
-    //   const formValue = this.ordemServicoForm.value;
-    //   const ordemServico: WorkOrderCreateDto = {
-    //     equipamentId: this.equipamentoSelecionado?.id.toString(),
-    //     hourMeter: formValue.hourMeter,
-    //     requestedServicesDescription: formValue.requestedServicesDescription,
-    //   };
+    if (this.ordemServicoForm.valid) {
+      if (this.ordemServicoForm.value.id) {
+        this.updateOrdemServico();
+      } else {
+        this.createOrdemServico();
+      }
+    }
+  }
 
-    //   if (formValue.id) {
-    //     const workOrderDto: WorkOrderDto = {
-    //       ...ordemServico,
-    //       id: formValue.id,
-    //       equipament: this.equipamentoSelecionado!,
-    //       orderStatus: formValue.orderStatus,
-    //       maintenanceLocation: '',
-    //       issueDate: formValue.issueDate,
-    //       lastModificationDate: '',
-    //       completedServicesDescription: '',
-    //       pendingServicesDescription: '',
-    //       responsibleMechanics: [] as UserDto[],
-    //       requester: this.userSelecionado!,
-    //     };
+  onCompleteSubmit() {
+    if (this.closingForm.valid) {
+      this.updateOrdemServico();
+    }
+  }
 
-    //     this.ordemServicoService.update(workOrderDto).subscribe(
-    //       () => {
-    //         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de Serviço atualizada' });
-    //         this.getOrdemServico();
-    //         this.displayDialog = false;
-    //       },
-    //       (error) => {
-    //         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao atualizar Ordem de Serviço' });
-    //       }
-    //     );
-    //   } else {
-    //     this.ordemServicoService.create(ordemServico).subscribe(
-    //       () => {
-    //         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem de Serviço adicionada' });
-    //         this.getOrdemServico();
-    //         this.displayDialog = false;
-    //       },
-    //       (error) => {
-    //         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao adicionar Ordem de Serviço' });
-    //       }
-    //     );
-    //   }
-    // }
+  createOrdemServico() {
+    const newOrdemServico: WorkOrderCreateDto = this.ordemServicoForm.value;
+    this.ordemServicoService.createOrdemServico(newOrdemServico).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Ordem de Serviço criada com sucesso.',
+        });
+        this.displayDialog = false;
+        this.getOrdemServico();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao criar Ordem de Serviço.',
+        });
+      }
+    });
+  }
+
+  updateOrdemServico() {
+  console.log("teste")
+    if (this.selectedWorkOrderId !== null) {
+      let mechanicsToSend: { id: number, name: string }[] = [];
+
+    if (typeof this.closingForm.value.responsibleMechanics === 'string') {
+      mechanicsToSend = [{ id: 0, name: this.closingForm.value.responsibleMechanics }];
+    } else if (Array.isArray(this.closingForm.value.responsibleMechanics)) {
+      mechanicsToSend = this.closingForm.value.responsibleMechanics.map((name: string, index: number) => ({
+        id: index,
+        name: name
+      }));
+    }
+
+      const updatedOrdemServico: WorkOrderDto = {
+        ...this.ordemServicoForm.value,
+        id: this.selectedWorkOrderId,
+        orderStatus: this.closingForm.value.orderStatus,
+        responsibleMechanics: mechanicsToSend,
+        closing: {
+          ...this.closingForm.value,
+        }
+      };
+      console.log(updatedOrdemServico.responsibleMechanics)
+  
+      this.ordemServicoService.updateOrdemServico(updatedOrdemServico).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Ordem de Serviço atualizada com sucesso.',
+          });
+          this.displayDialog = false;
+          this.displayCompleteDialog = false;
+          this.getOrdemServico();
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao atualizar Ordem de Serviço.',
+          });
+        }
+      });
+    }
   }
 
   applyFilter(event: Event, field: string) {
