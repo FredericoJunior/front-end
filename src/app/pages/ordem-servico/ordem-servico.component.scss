@@ -56,3 +56,9 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.criacaoFormulario {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

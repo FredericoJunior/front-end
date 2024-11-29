@@ -16,7 +16,7 @@
         icon="pi pi-plus"
         label="Adicionar Ordem de Serviço"
         class="p-button-success"
-        (click)="openAddDialog()"
+        (click)="openDialog()"
       ></button>
     </div>
     <p-table
@@ -40,9 +40,12 @@
           <th pSortableColumn="equipament.number">
             Equipamento <p-sortIcon field="equipament.number" />
           </th>
-          <th pSortableColumn="orderStatus">Status <p-sortIcon field="orderStatus" /></th>
+          <th pSortableColumn="orderStatus">
+            Status <p-sortIcon field="orderStatus" />
+          </th>
           <th pSortableColumn="requestedServicesDescription">
-            Descrição dos Serviços <p-sortIcon field="requestedServicesDescription" />
+            Descrição dos Serviços
+            <p-sortIcon field="requestedServicesDescription" />
           </th>
           <th pSortableColumn="requester.name">
             Solicitante <p-sortIcon field="requester.name" />
@@ -117,7 +120,7 @@
           <td>{{ item.orderStatus }}</td>
           <td>{{ item.requestedServicesDescription }}</td>
           <td>{{ item.requester.name }}</td>
-          <td>{{ item.issueDate | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ item.issueDate | date : "dd/MM/yyyy" }}</td>
           <td>
             <div class="d-flex">
               <button
@@ -125,7 +128,7 @@
                 icon="pi pi-check"
                 class="p-button-rounded p-button-info p-button-sm"
                 title="Concluir Ordem de Serviço"
-                (click)="openCompleteDialog(item)"
+                (click)="openDialog(item)"
               ></button>
             </div>
           </td>
@@ -135,131 +138,281 @@
   </p-card>
 
   <p-dialog
-    header="{{ dialogTitle }}"
-    [(visible)]="displayDialog"
-    [modal]="true"
-    [closable]="false"
-    [style]="{ width: '30rem' }"
-  >
+  header="{{ dialogTitle }}"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '60rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+>
   <form [formGroup]="ordemServicoForm" (ngSubmit)="onSubmit()">
-    <div class="formulario">
-      <label for="requesterName" class="font-semibold w-6rem">Solicitante:</label>
-      <p-dropdown
-        [options]="user"
-        optionLabel="name"
-        optionValue="id"
-        formControlName="requesterName"
-        (onChange)="onRequesterChange($event)"
-        placeholder="Selecione um solicitante"
-      ></p-dropdown>
-      <div
-        *ngIf="
-          ordemServicoForm.controls['requesterName'].invalid &&
-          (ordemServicoForm.controls['requesterName'].dirty ||
-            ordemServicoForm.controls['requesterName'].touched)
-        "
-      >
-        <small class="p-error">Solicitante é obrigatório.</small>
+    <div class="criacaoFormulario">
+      <div class="formulario">
+        <p-dropdown
+          [options]="equipamento"
+          optionLabel="number"
+          optionValue="id"
+          formControlName="equipament"
+          (onChange)="onEquipamentChange($event)"
+          placeholder="Selecione um equipamento"
+          pTooltip="Equipamento"
+          tooltipPosition="top"
+        ></p-dropdown>
+      </div>
+      <div class="formulario">
+        <p-dropdown
+          [options]="user"
+          optionLabel="name"
+          optionValue="id"
+          formControlName="requester"
+          (onChange)="onRequesterChange($event)"
+          pTooltip="Selecione um solicitante"
+          tooltipPosition="top"
+          placeholder="Selecione um solicitante"
+        ></p-dropdown>
+      </div>
+      <div class="formulario">
+        <p-dropdown
+          [options]="mecanicos"
+          formControlName="responsibleMechanics"
+          placeholder="Selecione os Mecânicos Responsáveis"
+          pTooltip="Mecânicos Responsáveis"
+          tooltipPosition="top"
+        ></p-dropdown>
       </div>
     </div>
-    <div class="formulario">
-      <label for="equipamentNumber" class="font-semibold w-6rem">Equipamento:</label>
-      <p-dropdown
-        [options]="equipamento"
-        optionLabel="number"
-        optionValue="id"
-        formControlName="equipamentId"
-        (onChange)="onEquipamentChange($event)"
-        placeholder="Selecione um equipamento"
-      ></p-dropdown>
-      <div
-        *ngIf="
-          ordemServicoForm.controls['equipamentId'].invalid &&
-          (ordemServicoForm.controls['equipamentId'].dirty ||
-            ordemServicoForm.controls['equipamentId'].touched)
-        "
-      >
-        <small class="p-error">Equipamento é obrigatório.</small>
+    <div class="criacaoFormulario">
+      <div class="formulario">
+        <input
+          pInputText
+          id="orderStatus"
+          class="flex-auto"
+          formControlName="orderStatus"
+          autocomplete="off"
+          placeholder="Status"
+          pTooltip="Status"
+          tooltipPosition="top"
+        />
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="maintenanceLocation"
+          class="flex-auto"
+          formControlName="maintenanceLocation"
+          autocomplete="off"
+          placeholder="Local de Manutenção"
+          pTooltip="Local de Manutenção"
+          tooltipPosition="top"
+        />
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="hourMeter"
+          class="flex-auto"
+          formControlName="hourMeter"
+          autocomplete="off"
+          type="number"
+          placeholder="Horímetro"
+          pTooltip="Horímetro"
+          tooltipPosition="top"
+        />
       </div>
     </div>
-    <div class="formulario">
-      <label for="hourMeter" class="font-semibold w-6rem">Horímetro:</label>
-      <input
-        pInputText
-        id="hourMeter"
-        class="flex-auto"
-        formControlName="hourMeter"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          ordemServicoForm.controls['hourMeter'].invalid &&
-          (ordemServicoForm.controls['hourMeter'].dirty ||
-            ordemServicoForm.controls['hourMeter'].touched)
-        "
-      >
-        <small class="p-error">Horímetro é obrigatório.</small>
+    <div class="criacaoFormulario">
+      <div class="formulario">
+        <input
+          pInputText
+          id="requestedServicesDescription"
+          class="flex-auto"
+          formControlName="requestedServicesDescription"
+          autocomplete="off"
+          placeholder="Descrição dos Serviços"
+          pTooltip="Descrição dos Serviços"
+          tooltipPosition="top"
+        />
       </div>
-    </div>
-    <div class="formulario">
-      <label for="orderStatus" class="font-semibold w-6rem">Status:</label>
-      <input
-        pInputText
-        id="orderStatus"
-        class="flex-auto"
-        formControlName="orderStatus"
-        autocomplete="off"
-      />
-      <div
-        *ngIf="
-          ordemServicoForm.controls['orderStatus'].invalid &&
-          (ordemServicoForm.controls['orderStatus'].dirty ||
-            ordemServicoForm.controls['orderStatus'].touched)
-        "
-      >
-        <small class="p-error">Status é obrigatório.</small>
+      <div class="formulario">
+        <input
+          pInputText
+          id="completedServicesDescription"
+          class="flex-auto"
+          formControlName="completedServicesDescription"
+          autocomplete="off"
+          placeholder="Descrição dos Serviços Completados"
+          pTooltip="Descrição dos Serviços Completados"
+          tooltipPosition="top"
+        />
       </div>
-    </div>
-    <div class="formulario">
-      <label for="requestedServicesDescription" class="font-semibold w-6rem">Descrição dos Serviços:</label>
-      <input
-        pInputText
-        id="requestedServicesDescription"
-        class="flex-auto"
-        formControlName="requestedServicesDescription"
-        autocomplete="off"
-      />
-      <div
-        *ngIf="
-          ordemServicoForm.controls['requestedServicesDescription'].invalid &&
-          (ordemServicoForm.controls['requestedServicesDescription'].dirty ||
-            ordemServicoForm.controls['requestedServicesDescription'].touched)
-        "
-      >
-        <small class="p-error">Descrição dos Serviços é obrigatória.</small>
-      </div>
-    </div>
-    
-    <div class="formulario">
-      <label for="issueDate" class="font-semibold w-6rem">Data de Emissão:</label>
-      <p-calendar
-        [showIcon]="true"
-        formControlName="issueDate"
-        dateFormat="dd/mm/yy"
-        placeholder="Data de Emissão"
-      ></p-calendar>
-      <div
-        *ngIf="
-          ordemServicoForm.controls['issueDate'].invalid &&
-          (ordemServicoForm.controls['issueDate'].dirty ||
-            ordemServicoForm.controls['issueDate'].touched)
-        "
-      >
-        <small class="p-error">Data de Emissão é obrigatória.</small>
+      <div class="formulario">
+        <input
+          pInputText
+          id="pendingServicesDescription"
+          class="flex-auto"
+          formControlName="pendingServicesDescription"
+          autocomplete="off"
+          placeholder="Descrição dos Serviços Pendentes"
+          pTooltip="Descrição dos Serviços Pendentes"
+          tooltipPosition="top"
+        />
       </div>
     </div>
 
+    <h3>Informações sobre fechamento da O.S</h3>
+
+    <div formGroupName="closing">
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <p-dropdown
+            [options]="user"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="responsible"
+            placeholder="Selecione o Responsável"
+            pTooltip="Responsável"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="total"
+            class="flex-auto"
+            formControlName="total"
+            autocomplete="off"
+            type="number"
+            placeholder="Total"
+            pTooltip="Total"
+            tooltipPosition="top"
+            [disabled]="true"
+          />
+        </div>
+      </div>
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <input
+            pInputText
+            id="quantity15w40"
+            class="flex-auto"
+            formControlName="quantity15w40"
+            autocomplete="off"
+            type="number"
+            placeholder="Quantidade 15w40"
+            pTooltip="Quantidade 15w40"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="quantityAw68"
+            class="flex-auto"
+            formControlName="quantityAw68"
+            autocomplete="off"
+            type="number"
+            placeholder="Quantidade Aw68"
+            pTooltip="Quantidade Aw68"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="quantity428"
+            class="flex-auto"
+            formControlName="quantity428"
+            autocomplete="off"
+            type="number"
+            placeholder="Quantidade 428"
+            pTooltip="Quantidade 428"
+            tooltipPosition="top"
+          />
+        </div>
+      </div>
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <input
+            pInputText
+            id="quantity80W"
+            class="flex-auto"
+            formControlName="quantity80W"
+            autocomplete="off"
+            type="number"
+            placeholder="Quantidade 80W"
+            pTooltip="Quantidade 80W"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="quantity85w90"
+            class="flex-auto"
+            formControlName="quantity85w90"
+            autocomplete="off"
+            type="number"
+            placeholder="Quantidade 85w90"
+            pTooltip="Quantidade 85w90"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="laborValue"
+            class="flex-auto"
+            formControlName="laborValue"
+            autocomplete="off"
+            type="number"
+            placeholder="Valor da Mão de Obra"
+            pTooltip="Valor da Mão de Obra"
+            tooltipPosition="top"
+          />
+        </div>
+      </div>
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <input
+            pInputText
+            id="transportation"
+            class="flex-auto"
+            formControlName="transportation"
+            autocomplete="off"
+            type="number"
+            placeholder="Transporte"
+            pTooltip="Transporte"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="thirdParties"
+            class="flex-auto"
+            formControlName="thirdParties"
+            autocomplete="off"
+            type="number"
+            placeholder="Terceiros"
+            pTooltip="Terceiros"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="oils"
+            class="flex-auto"
+            formControlName="oils"
+            autocomplete="off"
+            type="number"
+            placeholder="Óleos"
+            pTooltip="Óleos"
+            tooltipPosition="top"
+          />
+        </div>
+      </div>
+    </div>
     <div class="buttons">
       <p-button
         label="Cancelar"
@@ -274,266 +427,8 @@
       ></p-button>
     </div>
   </form>
-  </p-dialog>
-</div>
-
-<p-dialog
-  header="{{ dialogTitle }}"
-  [(visible)]="displayCompleteDialog"
-  [modal]="true"
-  [closable]="false"
-  [style]="{ width: '30rem' }"
->
-  <form [formGroup]="closingForm" (ngSubmit)="onCompleteSubmit()">
-    <div class="formulario">
-      <label for="orderStatus" class="font-semibold w-6rem">Status:</label>
-      <p-dropdown
-        [options]="orderStatusOptions"
-        formControlName="orderStatus"
-        placeholder="Selecione o status"
-      ></p-dropdown>
-      <div
-        *ngIf="
-          closingForm.controls['orderStatus'].invalid &&
-          (closingForm.controls['orderStatus'].dirty ||
-            closingForm.controls['orderStatus'].touched)
-        "
-      >
-        <small class="p-error">Status é obrigatório.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="responsibleMechanics" class="font-semibold w-6rem">Mecânicos Responsáveis:</label>
-      <p-dropdown
-        [options]="mecanicos"
-        formControlName="responsibleMechanics"
-        placeholder="Selecione os mecânicos"
-      ></p-dropdown>
-      <div
-        *ngIf="
-          closingForm.controls['responsibleMechanics'].invalid &&
-          (closingForm.controls['responsibleMechanics'].dirty ||
-            closingForm.controls['responsibleMechanics'].touched)
-        "
-      >
-        <small class="p-error">Mecânicos Responsáveis são obrigatórios.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="quantity15w40" class="font-semibold w-6rem">15W40:</label>
-      <input
-        pInputText
-        id="quantity15w40"
-        class="flex-auto"
-        formControlName="quantity15w40"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['quantity15w40'].invalid &&
-          (closingForm.controls['quantity15w40'].dirty ||
-            closingForm.controls['quantity15w40'].touched)
-        "
-      >
-        <small class="p-error">Quantidade 15W40 é obrigatória.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="quantityAw68" class="font-semibold w-6rem">AW68:</label>
-      <input
-        pInputText
-        id="quantityAw68"
-        class="flex-auto"
-        formControlName="quantityAw68"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['quantityAw68'].invalid &&
-          (closingForm.controls['quantityAw68'].dirty ||
-            closingForm.controls['quantityAw68'].touched)
-        "
-      >
-        <small class="p-error">Quantidade AW68 é obrigatória.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="quantity428" class="font-semibold w-6rem">428:</label>
-      <input
-        pInputText
-        id="quantity428"
-        class="flex-auto"
-        formControlName="quantity428"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['quantity428'].invalid &&
-          (closingForm.controls['quantity428'].dirty ||
-            closingForm.controls['quantity428'].touched)
-        "
-      >
-        <small class="p-error">Quantidade 428 é obrigatória.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="quantity80W" class="font-semibold w-6rem">80W:</label>
-      <input
-        pInputText
-        id="quantity80W"
-        class="flex-auto"
-        formControlName="quantity80W"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['quantity80W'].invalid &&
-          (closingForm.controls['quantity80W'].dirty ||
-            closingForm.controls['quantity80W'].touched)
-        "
-      >
-        <small class="p-error">Quantidade 80W é obrigatória.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="quantity85w90" class="font-semibold w-6rem">85W90:</label>
-      <input
-        pInputText
-        id="quantity85w90"
-        class="flex-auto"
-        formControlName="quantity85w90"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['quantity85w90'].invalid &&
-          (closingForm.controls['quantity85w90'].dirty ||
-            closingForm.controls['quantity85w90'].touched)
-        "
-      >
-        <small class="p-error">Quantidade 85W90 é obrigatória.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="laborValue" class="font-semibold w-6rem">Valor da Mão de Obra:</label>
-      <input
-        pInputText
-        id="laborValue"
-        class="flex-auto"
-        formControlName="laborValue"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['laborValue'].invalid &&
-          (closingForm.controls['laborValue'].dirty ||
-            closingForm.controls['laborValue'].touched)
-        "
-      >
-        <small class="p-error">Valor da Mão de Obra é obrigatório.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="transportation" class="font-semibold w-6rem">Transporte:</label>
-      <input
-        pInputText
-        id="transportation"
-        class="flex-auto"
-        formControlName="transportation"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['transportation'].invalid &&
-          (closingForm.controls['transportation'].dirty ||
-            closingForm.controls['transportation'].touched)
-        "
-      >
-        <small class="p-error">Transporte é obrigatório.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="thirdParties" class="font-semibold w-6rem">Terceiros:</label>
-      <input
-        pInputText
-        id="thirdParties"
-        class="flex-auto"
-        formControlName="thirdParties"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['thirdParties'].invalid &&
-          (closingForm.controls['thirdParties'].dirty ||
-            closingForm.controls['thirdParties'].touched)
-        "
-      >
-        <small class="p-error">Terceiros é obrigatório.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="oils" class="font-semibold w-6rem">Óleos:</label>
-      <input
-        pInputText
-        id="oils"
-        class="flex-auto"
-        formControlName="oils"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['oils'].invalid &&
-          (closingForm.controls['oils'].dirty ||
-            closingForm.controls['oils'].touched)
-        "
-      >
-        <small class="p-error">Óleos é obrigatório.</small>
-      </div>
-    </div>
-    <div class="formulario">
-      <label for="total" class="font-semibold w-6rem">Total:</label>
-      <input
-        pInputText
-        id="total"
-        class="flex-auto"
-        formControlName="total"
-        autocomplete="off"
-        type="number"
-      />
-      <div
-        *ngIf="
-          closingForm.controls['total'].invalid &&
-          (closingForm.controls['total'].dirty ||
-            closingForm.controls['total'].touched)
-        "
-      >
-        <small class="p-error">Total é obrigatório.</small>
-      </div>
-    </div>
-    <div class="buttons">
-      <p-button
-        label="Cancelar"
-        severity="danger"
-        (click)="displayCompleteDialog = false"
-      ></p-button>
-      <p-button
-        class="button-salvar"
-        label="Salvar"
-        type="submit"
-        [disabled]="closingForm.invalid"
-      ></p-button>
-    </div>
-  </form>
 </p-dialog>
+</div>
 
 <div class="card flex justify-content-center gap-2">
   <p-toast></p-toast>

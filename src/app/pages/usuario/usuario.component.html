@@ -141,15 +141,14 @@
           id="login"
           class="flex-auto"
           type="email"
-          required email autocomplete="email"
           formControlName="login"
           autocomplete="off"
+          placeholder="Digite o login"
         />
         <div
           *ngIf="
             usuarioForm.controls['login'].invalid &&
-            (usuarioForm.controls['login'].dirty ||
-              usuarioForm.controls['login'].touched)
+            (usuarioForm.controls['login'].dirty || usuarioForm.controls['login'].touched)
           "
         >
           <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['required']">
@@ -170,15 +169,15 @@
           [toggleMask]="true"
           formControlName="password"
           minlength="8"
-          autocomplete="off"
+          autocomplete="new-password"
           [feedback]="false"
           class="flex-auto"
+          placeholder="Digite a senha"
         ></p-password>
         <div
           *ngIf="
             usuarioForm.controls['password'].invalid &&
-            (usuarioForm.controls['password'].dirty ||
-              usuarioForm.controls['password'].touched)
+            (usuarioForm.controls['password'].dirty || usuarioForm.controls['password'].touched)
           "
         >
           <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['required']">
