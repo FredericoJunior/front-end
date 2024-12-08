@@ -161,8 +161,7 @@
           <p-dropdown
             [options]="equipamento"
             optionLabel="number"
-            optionValue="id"
-            formControlName="equipamentId"
+            formControlName="equipament"
             (onChange)="onEquipamentChange($event)"
             placeholder="Selecione um equipamento"
             pTooltip="Equipamento"
@@ -170,18 +169,7 @@
           ></p-dropdown>
         </div>
         <div class="formulario">
-          <p-dropdown
-            [options]="user"
-            optionLabel="name"
-            formControlName="requester"
-            (onChange)="onRequesterChange($event)"
-            placeholder="Selecione um solicitante"
-            pTooltip="Selecione um solicitante"
-            tooltipPosition="top"
-          ></p-dropdown>
-        </div>
-        <div class="formulario">
-          <p-dropdown
+          <p-multiSelect
             [options]="mecanicos"
             optionLabel="name"
             formControlName="responsibleMechanics"
@@ -189,7 +177,7 @@
             placeholder="Selecione os Mecânicos Responsáveis"
             pTooltip="Mecânicos Responsáveis"
             tooltipPosition="top"
-          ></p-dropdown>
+          ></p-multiSelect>
         </div>
       </div>
       <div class="criacaoFormulario">
@@ -270,19 +258,6 @@
       <h3>Valores gastos para fechamento de O.S</h3>
 
       <div formGroupName="closing">
-        <div class="criacaoFormulario">
-          <div class="formulario">
-            <p-dropdown
-              [options]="user"
-              optionLabel="name"
-              optionValue="id"
-              formControlName="responsible"
-              placeholder="Selecione o Responsável"
-              pTooltip="Responsável"
-              tooltipPosition="top"
-            ></p-dropdown>
-          </div>
-        </div>
         <div class="criacaoFormulario">
           <div class="formulario">
             <label for="quantity15w40">15w40</label>
@@ -445,8 +420,8 @@
         <p-dropdown
           [options]="equipamento"
           optionLabel="number"
-          optionValue="id"
           formControlName="equipamentId"
+          optionValue="id"
           placeholder="Selecione um equipamento"
           pTooltip="Equipamento"
           tooltipPosition="top"

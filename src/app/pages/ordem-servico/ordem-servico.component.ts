@@ -1,26 +1,36 @@
-import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { CommonModule } from "@angular/common";
-import { Router } from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
-import { TableModule } from "primeng/table";
-import { CardModule } from "primeng/card";
-import { DialogModule } from "primeng/dialog";
-import { InputTextModule } from "primeng/inputtext";
-import { ConfirmationService, MessageService } from "primeng/api";
+import { TableModule } from 'primeng/table';
+import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { CalendarModule } from 'primeng/calendar';
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { ToastModule } from "primeng/toast";
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { MultiSelectModule } from 'primeng/multiselect';
 
-import { MenuComponent } from "../menu/menu.component";
-import { OrdemServicoService } from "../../services/ordem-servico.service";
+import { MenuComponent } from '../menu/menu.component';
+import { OrdemServicoService } from '../../services/ordem-servico.service';
 import { EquipamentoService } from '../../services/equipamento.service';
-import { UserService } from "../../services/user.service";
-import { WorkOrderCreateDto, WorkOrderDto } from './ordem-servico.model';
+import { UserService } from '../../services/user.service';
+import {
+  WorkOrderCreateDto,
+  WorkOrderDto,
+  InputDataDto,
+  OutputDto,
+} from './ordem-servico.model';
 import { EquipamentDto } from '../equipamento/equipamento.model';
 import { UserDto } from '../usuario/usuario.model';
 
@@ -45,7 +55,7 @@ import { UserDto } from '../usuario/usuario.model';
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './ordem-servico.component.html',
-  styleUrl: './ordem-servico.component.scss'
+  styleUrl: './ordem-servico.component.scss',
 })
 export class OrdemServicoComponent implements OnInit {
   dados: WorkOrderDto[] = [];
@@ -65,10 +75,24 @@ export class OrdemServicoComponent implements OnInit {
   mecanicos: UserDto[] = [];
   mecanicosSelecionados: UserDto[] = [];
   orderStatusOptions: any[] = [
-    { label: 'ABERTO', value: 'ABERTO' },
+    { label: 'ABERTA', value: 'ABERTA' },
     { label: 'EM ANDAMENTO', value: 'EMANDAMENTO' },
     { label: 'FECHADA', value: 'FECHADA' },
-  ]
+  ];
+  InputDataDto: InputDataDto[] = [
+    {
+      registrationDate: '2024-02-21 10:00:00',
+      km: 10.0,
+      local: 'oficina',
+    },
+  ];
+  OutputDto: OutputDto[] = [
+    {
+      registrationDate: '2024-02-21 10:00:00',
+      km: 10.0,
+      local: 'oficina',
+    },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -76,37 +100,38 @@ export class OrdemServicoComponent implements OnInit {
     private equipamentoService: EquipamentoService,
     private messageService: MessageService,
     private router: Router,
-    private usuarioService: UserService,
+    private usuarioService: UserService
   ) {
     this.qrCodeForm = this.fb.group({
       equipamentId: ['', Validators.required],
       hourMeter: ['', Validators.required],
-      requestedServicesDescription: ['', Validators.required]
+      requestedServicesDescription: ['', Validators.required],
     });
-    
+
     this.ordemServicoForm = this.fb.group({
-      equipamentId: [null, Validators.required],
-      requester: [null, Validators.required],
+      equipament: [null, Validators.required],
       orderStatus: [null, Validators.required],
       maintenanceLocation: [null, Validators.required],
       hourMeter: ['', Validators.required],
       requestedServicesDescription: ['', Validators.required],
       completedServicesDescription: [null, Validators.required],
       pendingServicesDescription: [null, Validators.required],
-      responsibleMechanics: [null, Validators.required], // Deve ser uma lista de objetos
+      responsibleMechanics: [null, Validators.required],
       closing: this.fb.group({
         responsible: [null],
-        quantity15w40: [0.00, Validators.min(0)],
-        quantityAw68: [0.00, Validators.min(0)],
-        quantity428: [0.00, Validators.min(0)],
-        quantity80W: [0.00, Validators.min(0)],
-        quantity85w90: [0.00, Validators.min(0)],
-        laborValue: [0.00, Validators.min(0)],
-        transportation: [0.00, Validators.min(0)],
-        thirdParties: [0.00, Validators.min(0)],
-        oils: [0.00, Validators.min(0)],
-        total: [{ value: 0.00, disabled: true }, Validators.min(0)]
-      })
+        quantity15w40: [0.0, Validators.min(0)],
+        quantityAw68: [0.0, Validators.min(0)],
+        quantity428: [0.0, Validators.min(0)],
+        quantity80W: [0.0, Validators.min(0)],
+        quantity85w90: [0.0, Validators.min(0)],
+        laborValue: [0.0, Validators.min(0)],
+        transportation: [0.0, Validators.min(0)],
+        thirdParties: [0.0, Validators.min(0)],
+        oils: [0.0, Validators.min(0)],
+        total: [{ value: 0.0, disabled: true }, Validators.min(0)],
+      }),
+      inputData: this.fb.array([]),
+      outputData: this.fb.array([])
     });
 
     const userPermissions = JSON.parse(
@@ -120,11 +145,30 @@ export class OrdemServicoComponent implements OnInit {
     this.getEquipament();
     this.getUser();
     this.getMecanicos();
+
+    this.ordemServicoForm.patchValue({
+      inputData: [
+        {
+          registrationDate: '2024-02-21 10:00:00',
+          km: 10.0,
+          local: 'oficina'
+        }
+      ],
+      outputData: [
+        {
+          registrationDate: '2024-02-21 10:00:00',
+          km: 10.0,
+          local: 'oficina'
+        }
+      ]
+    });
   }
-  
+
   onEquipamentChange(event: any) {
-    this.equipamentoSelecionado = this.equipamento.find((e) => e.id === event.value) || null;
-    this.ordemServicoForm.patchValue({ equipament: this.equipamentoSelecionado });
+    this.equipamentoSelecionado = event.value;
+    this.ordemServicoForm.patchValue({
+      equipament: this.equipamentoSelecionado,
+    });
   }
 
   onRequesterChange(event: any) {
@@ -157,8 +201,12 @@ export class OrdemServicoComponent implements OnInit {
         });
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao carregar dados' });
-      }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao carregar dados',
+        });
+      },
     });
   }
 
@@ -169,7 +217,7 @@ export class OrdemServicoComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
 
@@ -177,11 +225,14 @@ export class OrdemServicoComponent implements OnInit {
     this.usuarioService.getAllUsuarios().subscribe({
       next: (response) => {
         this.user = response;
-        console.log("🚀 ~ file: ordem-servico.component.ts:180 ~ OrdemServicoComponent ~ this.usuarioService.getAllUsuarios ~ this.user:", this.user);
+        console.log(
+          '🚀 ~ file: ordem-servico.component.ts:180 ~ OrdemServicoComponent ~ this.usuarioService.getAllUsuarios ~ this.user:',
+          this.user
+        );
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
 
@@ -189,11 +240,14 @@ export class OrdemServicoComponent implements OnInit {
     this.usuarioService.getAllMecanicos().subscribe({
       next: (response) => {
         this.mecanicos = response;
-        console.log("🚀 ~ file: ordem-servico.component.ts:192 ~ OrdemServicoComponent ~ this.usuarioService.getAllMecanicos ~ this.mecanicos:", this.mecanicos);
+        console.log(
+          '🚀 ~ file: ordem-servico.component.ts:192 ~ OrdemServicoComponent ~ this.usuarioService.getAllMecanicos ~ this.mecanicos:',
+          this.mecanicos
+        );
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
 
@@ -220,26 +274,31 @@ export class OrdemServicoComponent implements OnInit {
 
   createOrdemServico() {
     let newOrdemServico: WorkOrderDto = this.ordemServicoForm.value;
-    
-    console.log("🚀 ~ file: ordem-servico.component.ts:221 ~ OrdemServicoComponent ~ createOrdemServico ~ newOrdemServico:", newOrdemServico);
-    this.ordemServicoService.createCompleteOrdemServico(newOrdemServico).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Ordem de Serviço criada com sucesso.',
-        });
-        this.displayDialog = false;
-        this.getOrdemServico();
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao criar Ordem de Serviço.',
-        });
-      }
-    });
+
+    console.log(
+      '🚀 ~ file: ordem-servico.component.ts:221 ~ OrdemServicoComponent ~ createOrdemServico ~ newOrdemServico:',
+      newOrdemServico
+    );
+    this.ordemServicoService
+      .createCompleteOrdemServico(newOrdemServico)
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Ordem de Serviço criada com sucesso.',
+          });
+          this.displayDialog = false;
+          this.getOrdemServico();
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao criar Ordem de Serviço.',
+          });
+        },
+      });
   }
 
   applyFilter(event: Event, field: string) {
@@ -258,12 +317,12 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   openQRCodeDialog() {
-    this.qrCodeForm.reset(); // Reseta o formulário ao abrir o diálogo
+    this.qrCodeForm.reset();
     this.displayQRCodeDialog = true;
   }
 
   closeQRCodeDialog() {
-    this.qrCodeForm.reset(); // Reseta o formulário ao fechar o diálogo
+    this.qrCodeForm.reset();
     this.displayQRCodeDialog = false;
   }
 
@@ -286,7 +345,7 @@ export class OrdemServicoComponent implements OnInit {
             summary: 'Erro',
             detail: 'Erro ao criar Ordem de Serviço.',
           });
-        }
+        },
       });
     }
   }

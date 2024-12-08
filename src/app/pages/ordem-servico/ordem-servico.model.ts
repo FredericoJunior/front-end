@@ -35,15 +35,15 @@ export interface ClosureDto {
 }
 
 export interface InputDataDto {
-  id: number;
-  registrationDate: Date;
+  id?: number;
+  registrationDate: any;
   km: number;
   local: string;
 }
 
 export interface OutputDto {
-  id: number;
-  registrationDate?: Date;
+  id?: number;
+  registrationDate?: any;
   km: number;
   local: string;
 }
