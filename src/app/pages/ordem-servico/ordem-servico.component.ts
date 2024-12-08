@@ -191,7 +191,7 @@ export class OrdemServicoComponent implements OnInit {
 
     this.ordemServicoService.getAllOrdemServico().subscribe({
       next: (data) => {
-        this.dados = data;
+        this.dados = data.sort((a, b) => b.id - a.id);
         this.dadosOriginais = [...data];
 
         this.messageService.add({

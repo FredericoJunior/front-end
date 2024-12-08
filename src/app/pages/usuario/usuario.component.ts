@@ -97,7 +97,12 @@ export class UsuarioComponent {
 
     this.usuarioService.getAllUsuarios().subscribe({
       next: (response) => {
-        this.dados = response;
+        this.dados = response.sort((a, b) => {
+          if (b.id === undefined || a.id === undefined) {
+            return 0;
+          }
+          return b.id - a.id;
+        });
         this.dadosOriginais = [...response];
 
         this.messageService.add({
