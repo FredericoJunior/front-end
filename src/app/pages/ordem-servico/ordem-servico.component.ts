@@ -62,12 +62,9 @@ export class OrdemServicoComponent implements OnInit {
   mecanicos: any | any[] = [];
   orderStatusOptions: any[] = [
     { label: 'ABERTO', value: 'ABERTO' },
-    { label: 'EMANDAMENTO', value: 'EMANDAMENTO' },
+    { label: 'EM ANDAMENTO', value: 'EMANDAMENTO' },
     { label: 'FECHADA', value: 'FECHADA' },
   ]
-
-  selectedWorkOrderId: number | null = null;
-  selectedStatus: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -78,17 +75,17 @@ export class OrdemServicoComponent implements OnInit {
     private usuarioService: UserService,
   ) {
     this.ordemServicoForm = this.fb.group({
-      equipament: [null, Validators.required],
-      requester: [null, Validators.required],
-      orderStatus: ['', Validators.required],
-      maintenanceLocation: ['', Validators.required],
+      equipamentId: [null, Validators.required],
+      requester: [null],
+      orderStatus: [''],
+      maintenanceLocation: [''],
       hourMeter: ['', Validators.required],
       requestedServicesDescription: ['', Validators.required],
-      completedServicesDescription: ['', Validators.required],
-      pendingServicesDescription: ['', Validators.required],
-      responsibleMechanics: [[], Validators.required],
+      completedServicesDescription: [''],
+      pendingServicesDescription: [''],
+      responsibleMechanics: [[]],
       closing: this.fb.group({
-        responsible: [null, Validators.required],
+        responsible: [null],
         quantity15w40: [0.00, Validators.min(0)],
         quantityAw68: [0.00, Validators.min(0)],
         quantity428: [0.00, Validators.min(0)],
@@ -197,19 +194,13 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   onSubmit() {
-    // if (this.ordemServicoForm.valid) {
-    //   if (this.ordemServicoForm.value.id) {
-    //     this.updateOrdemServico();
-    //   } else {
-    //     this.createOrdemServico();
-    //   }
-    // }
-  }
-
-  onCompleteSubmit() {
-    // if (this.closingForm.valid) {
-    //   this.updateOrdemServico();
-    // }
+    if (this.ordemServicoForm.valid) {
+      if (this.ordemServicoForm.value.id) {
+        //this.updateOrdemServico();
+      } else {
+        this.createOrdemServico();
+      }
+    }
   }
 
   createOrdemServico() {

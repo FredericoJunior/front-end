@@ -152,7 +152,7 @@
           [options]="equipamento"
           optionLabel="number"
           optionValue="id"
-          formControlName="equipament"
+          formControlName="equipamentId"
           (onChange)="onEquipamentChange($event)"
           placeholder="Selecione um equipamento"
           pTooltip="Equipamento"
@@ -183,16 +183,13 @@
     </div>
     <div class="criacaoFormulario">
       <div class="formulario">
-        <input
-          pInputText
-          id="orderStatus"
-          class="flex-auto"
+        <p-dropdown
+          [options]="orderStatusOptions"
           formControlName="orderStatus"
-          autocomplete="off"
-          placeholder="Status"
+          placeholder="Selecione o Status"
           pTooltip="Status"
           tooltipPosition="top"
-        />
+        ></p-dropdown>
       </div>
       <div class="formulario">
         <input
@@ -228,20 +225,8 @@
           class="flex-auto"
           formControlName="requestedServicesDescription"
           autocomplete="off"
-          placeholder="Descrição dos Serviços"
-          pTooltip="Descrição dos Serviços"
-          tooltipPosition="top"
-        />
-      </div>
-      <div class="formulario">
-        <input
-          pInputText
-          id="completedServicesDescription"
-          class="flex-auto"
-          formControlName="completedServicesDescription"
-          autocomplete="off"
-          placeholder="Descrição dos Serviços Completados"
-          pTooltip="Descrição dos Serviços Completados"
+          placeholder="Serviços Solicitados"
+          pTooltip="Serviços Solicitados"
           tooltipPosition="top"
         />
       </div>
@@ -252,14 +237,26 @@
           class="flex-auto"
           formControlName="pendingServicesDescription"
           autocomplete="off"
-          placeholder="Descrição dos Serviços Pendentes"
-          pTooltip="Descrição dos Serviços Pendentes"
+          placeholder="Serviços Pendentes"
+          pTooltip="Serviços Pendentes"
+          tooltipPosition="top"
+        />
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="completedServicesDescription"
+          class="flex-auto"
+          formControlName="completedServicesDescription"
+          autocomplete="off"
+          placeholder="Serviços Finalizados"
+          pTooltip="Serviços Finalizados"
           tooltipPosition="top"
         />
       </div>
     </div>
 
-    <h3>Informações sobre fechamento da O.S</h3>
+    <h3>Valores gastos para fechamento de O.S</h3>
 
     <div formGroupName="closing">
       <div class="criacaoFormulario">
@@ -274,23 +271,10 @@
             tooltipPosition="top"
           ></p-dropdown>
         </div>
-        <div class="formulario">
-          <input
-            pInputText
-            id="total"
-            class="flex-auto"
-            formControlName="total"
-            autocomplete="off"
-            type="number"
-            placeholder="Total"
-            pTooltip="Total"
-            tooltipPosition="top"
-            [disabled]="true"
-          />
-        </div>
       </div>
       <div class="criacaoFormulario">
         <div class="formulario">
+          <label for="quantity15w40">15w40</label>
           <input
             pInputText
             id="quantity15w40"
@@ -304,6 +288,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="quantityAw68">Aw68</label>
           <input
             pInputText
             id="quantityAw68"
@@ -317,6 +302,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="quantity428">428</label>
           <input
             pInputText
             id="quantity428"
@@ -332,6 +318,7 @@
       </div>
       <div class="criacaoFormulario">
         <div class="formulario">
+          <label for="quantity80W">80W</label>
           <input
             pInputText
             id="quantity80W"
@@ -345,6 +332,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="quantity85w90">85w90</label>
           <input
             pInputText
             id="quantity85w90"
@@ -358,6 +346,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="laborValue">Mão de Obra</label>
           <input
             pInputText
             id="laborValue"
@@ -373,6 +362,7 @@
       </div>
       <div class="criacaoFormulario">
         <div class="formulario">
+          <label for="transportation">Transporte</label>
           <input
             pInputText
             id="transportation"
@@ -386,6 +376,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="thirdParties">Terceiros</label>
           <input
             pInputText
             id="thirdParties"
@@ -399,6 +390,7 @@
           />
         </div>
         <div class="formulario">
+          <label for="oils">Óleos</label>
           <input
             pInputText
             id="oils"
