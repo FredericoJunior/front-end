@@ -7,6 +7,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { ReportsFilterDto } from '../pages/relatorio/relatorio.models';
 
 @Injectable({
   providedIn: 'root',
@@ -46,16 +47,16 @@ export class RegistroService {
     );
   }
 
-  getRelatorioExcel(): Observable<Blob> {
+  getRelatorioExcel(filterDto: ReportsFilterDto): Observable<Blob> {
     return this.http
-      .get(`${this.apiUrl}excel`, {
+      .post(`${this.apiUrl}excel`, filterDto, {
         headers: this.getHeaders(),
         responseType: 'blob',
       })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
-            return this.handle403Error(() => this.getRelatorioExcel());
+            return this.handle403Error(() => this.getRelatorioExcel(filterDto));
           } else {
             return this.handleError(error);
           }
@@ -63,16 +64,16 @@ export class RegistroService {
       );
   }
 
-  getRelatorioPdf(): Observable<Blob> {
+  getRelatorioPdf(filterDto: ReportsFilterDto): Observable<Blob> {
     return this.http
-      .get(`${this.apiUrl}pdf`, {
+      .post(`${this.apiUrl}pdf`, filterDto, {
         headers: this.getHeaders(),
         responseType: 'blob',
       })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
-            return this.handle403Error(() => this.getRelatorioExcel());
+            return this.handle403Error(() => this.getRelatorioPdf(filterDto));
           } else {
             return this.handleError(error);
           }

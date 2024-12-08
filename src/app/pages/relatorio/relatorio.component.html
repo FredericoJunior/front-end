@@ -3,24 +3,24 @@
   <h2 class="headerRelatorio">Relatórios</h2>
 
   <p-card header="Ordem de Serviço">
-    <form [formGroup]="relatorioForm" (ngSubmit)="onSubmit()" class="form-container"> 
+    <form [formGroup]="relatorioForm" class="form-container"> 
       <div class="date-range">
         <label>Escolha uma data:</label>
-        <p-calendar [showIcon]="true"  formControlName="startDate" dateFormat="dd/mm/yy" placeholder="Data Início"></p-calendar>
-        <p-calendar [showIcon]="true"  formControlName="endDate" dateFormat="dd/mm/yy" placeholder="Data Fim"></p-calendar>
+        <p-calendar [showIcon]="true" formControlName="startDate" dateFormat="dd/mm/yy" placeholder="Data Início"></p-calendar>
+        <p-calendar [showIcon]="true" formControlName="endDate" dateFormat="dd/mm/yy" placeholder="Data Fim"></p-calendar>
       </div>
 
       <div class="checkbox-group">
         <label>
-          <p-checkbox formControlName="historico" binary="true"></p-checkbox>
+          <p-checkbox formControlName="completedServices" binary="true"></p-checkbox>
           Histórico de serviços realizados
         </label>
         <label>
-          <p-checkbox formControlName="custos" binary="true"></p-checkbox>
+          <p-checkbox formControlName="closure" binary="true"></p-checkbox>
           Custos envolvidos
         </label>
         <label>
-          <p-checkbox formControlName="status" binary="true"></p-checkbox>
+          <p-checkbox formControlName="pendingServices" binary="true"></p-checkbox>
           Status dos serviços pendentes
         </label>
       </div>
