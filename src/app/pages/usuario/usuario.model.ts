@@ -76,6 +76,8 @@ export interface UserDto {
   login: string; //string(50)
   password?: string; //string(100)
   role: string; //string(50)
+  accessDisabled?: boolean;
+  resetPassword?: boolean;
   createdAt?: string;
 }
 

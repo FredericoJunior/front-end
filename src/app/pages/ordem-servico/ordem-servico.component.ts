@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 
 import { TableModule } from "primeng/table";
@@ -15,6 +14,7 @@ import { ToastModule } from "primeng/toast";
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { MenuComponent } from "../menu/menu.component";
 import { OrdemServicoService } from "../../services/ordem-servico.service";
@@ -41,6 +41,7 @@ import { UserDto } from '../usuario/usuario.model';
     CalendarModule,
     TooltipModule,
     InputTextareaModule,
+    MultiSelectModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './ordem-servico.component.html',
@@ -61,7 +62,8 @@ export class OrdemServicoComponent implements OnInit {
   equipamentoSelecionado: EquipamentDto | null = null;
   user: UserDto[] = [];
   userSelecionado: UserDto | null = null;
-  mecanicos: any | any[] = [];
+  mecanicos: UserDto[] = [];
+  mecanicosSelecionados: UserDto[] = [];
   orderStatusOptions: any[] = [
     { label: 'ABERTO', value: 'ABERTO' },
     { label: 'EM ANDAMENTO', value: 'EMANDAMENTO' },
@@ -84,14 +86,14 @@ export class OrdemServicoComponent implements OnInit {
     
     this.ordemServicoForm = this.fb.group({
       equipamentId: [null, Validators.required],
-      requester: [null],
-      orderStatus: [''],
-      maintenanceLocation: [''],
+      requester: [null, Validators.required],
+      orderStatus: [null, Validators.required],
+      maintenanceLocation: [null, Validators.required],
       hourMeter: ['', Validators.required],
       requestedServicesDescription: ['', Validators.required],
-      completedServicesDescription: [''],
-      pendingServicesDescription: [''],
-      responsibleMechanics: [[]],
+      completedServicesDescription: [null, Validators.required],
+      pendingServicesDescription: [null, Validators.required],
+      responsibleMechanics: [null, Validators.required], // Deve ser uma lista de objetos
       closing: this.fb.group({
         responsible: [null],
         quantity15w40: [0.00, Validators.min(0)],
@@ -122,10 +124,15 @@ export class OrdemServicoComponent implements OnInit {
   
   onEquipamentChange(event: any) {
     this.equipamentoSelecionado = this.equipamento.find((e) => e.id === event.value) || null;
+    this.ordemServicoForm.patchValue({ equipament: this.equipamentoSelecionado });
   }
 
   onRequesterChange(event: any) {
     this.userSelecionado = event.value;
+  }
+
+  onMechanicsChange(event: any) {
+    this.mecanicosSelecionados = event.value;
   }
 
   getOrdemServico() {
@@ -141,7 +148,6 @@ export class OrdemServicoComponent implements OnInit {
     this.ordemServicoService.getAllOrdemServico().subscribe({
       next: (data) => {
         this.dados = data;
-        console.log("🚀 ~ file: ordem-servico.component.ts:139 ~ OrdemServicoComponent ~ this.ordemServicoService.getAllOrdemServico ~ this.dados:", this.dados);
         this.dadosOriginais = [...data];
 
         this.messageService.add({
@@ -171,6 +177,7 @@ export class OrdemServicoComponent implements OnInit {
     this.usuarioService.getAllUsuarios().subscribe({
       next: (response) => {
         this.user = response;
+        console.log("🚀 ~ file: ordem-servico.component.ts:180 ~ OrdemServicoComponent ~ this.usuarioService.getAllUsuarios ~ this.user:", this.user);
       },
       error: (error) => {
         console.error(error);
@@ -181,8 +188,8 @@ export class OrdemServicoComponent implements OnInit {
   getMecanicos() {
     this.usuarioService.getAllMecanicos().subscribe({
       next: (response) => {
-        this.mecanicos = response.map((m) => m.name);
-        console.log("🚀 ~ file: ordem-servico.component.ts:169 ~ OrdemServicoComponent ~ this.usuarioService.getAllMecanicos ~ this.mecanicos:", this.mecanicos);
+        this.mecanicos = response;
+        console.log("🚀 ~ file: ordem-servico.component.ts:192 ~ OrdemServicoComponent ~ this.usuarioService.getAllMecanicos ~ this.mecanicos:", this.mecanicos);
       },
       error: (error) => {
         console.error(error);
@@ -212,7 +219,9 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   createOrdemServico() {
-    const newOrdemServico: WorkOrderDto = this.ordemServicoForm.value;
+    let newOrdemServico: WorkOrderDto = this.ordemServicoForm.value;
+    
+    console.log("🚀 ~ file: ordem-servico.component.ts:221 ~ OrdemServicoComponent ~ createOrdemServico ~ newOrdemServico:", newOrdemServico);
     this.ordemServicoService.createCompleteOrdemServico(newOrdemServico).subscribe({
       next: () => {
         this.messageService.add({

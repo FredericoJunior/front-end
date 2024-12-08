@@ -173,18 +173,19 @@
           <p-dropdown
             [options]="user"
             optionLabel="name"
-            optionValue="id"
             formControlName="requester"
             (onChange)="onRequesterChange($event)"
+            placeholder="Selecione um solicitante"
             pTooltip="Selecione um solicitante"
             tooltipPosition="top"
-            placeholder="Selecione um solicitante"
           ></p-dropdown>
         </div>
         <div class="formulario">
           <p-dropdown
             [options]="mecanicos"
+            optionLabel="name"
             formControlName="responsibleMechanics"
+            (onChange)="onMechanicsChange($event)"
             placeholder="Selecione os Mecânicos Responsáveis"
             pTooltip="Mecânicos Responsáveis"
             tooltipPosition="top"
@@ -440,42 +441,42 @@
     [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   >
     <form [formGroup]="qrCodeForm" (ngSubmit)="onQRCodeSubmit()">
-        <div class="formulario">
-          <p-dropdown
-            [options]="equipamento"
-            optionLabel="number"
-            optionValue="id"
-            formControlName="equipamentId"
-            placeholder="Selecione um equipamento"
-            pTooltip="Equipamento"
-            tooltipPosition="top"
-          ></p-dropdown>
-        </div>
-        <div class="formulario">
-          <input
-            pInputText
-            id="hourMeter"
-            class="flex-auto"
-            formControlName="hourMeter"
-            autocomplete="off"
-            type="number"
-            placeholder="Horímetro"
-            pTooltip="Horímetro"
-            tooltipPosition="top"
-          />
-        </div>
-        <div class="formulario">
-          <input
-            pInputText
-            id="requestedServicesDescription"
-            class="flex-auto"
-            formControlName="requestedServicesDescription"
-            autocomplete="off"
-            placeholder="Serviços Solicitados"
-            pTooltip="Serviços Solicitados"
-            tooltipPosition="top"
-          />
-        </div>
+      <div class="formulario">
+        <p-dropdown
+          [options]="equipamento"
+          optionLabel="number"
+          optionValue="id"
+          formControlName="equipamentId"
+          placeholder="Selecione um equipamento"
+          pTooltip="Equipamento"
+          tooltipPosition="top"
+        ></p-dropdown>
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="hourMeter"
+          class="flex-auto"
+          formControlName="hourMeter"
+          autocomplete="off"
+          type="number"
+          placeholder="Horímetro"
+          pTooltip="Horímetro"
+          tooltipPosition="top"
+        />
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="requestedServicesDescription"
+          class="flex-auto"
+          formControlName="requestedServicesDescription"
+          autocomplete="off"
+          placeholder="Serviços Solicitados"
+          pTooltip="Serviços Solicitados"
+          tooltipPosition="top"
+        />
+      </div>
 
       <div class="buttons">
         <p-button
