@@ -64,7 +64,12 @@ export class LoginComponent {
           summary: 'Sucesso',
           detail: 'Login realizado com sucesso!',
         });
-        this.router.navigate(['/inicio']);
+
+        if(response.resetPassword) {
+          this.router.navigate(['/alterar-senha']);
+        } else {
+          this.router.navigate(['/inicio']);
+        }
       },
       error: (error) => {
         this.messageService.add({
