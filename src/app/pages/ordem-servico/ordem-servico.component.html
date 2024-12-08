@@ -10,14 +10,24 @@
         (click)="getOrdemServico()"
         label="Atualizar"
       ></button>
-      <button
-        pButton
-        pRipple
-        icon="pi pi-plus"
-        label="Adicionar Ordem de Serviço"
-        class="p-button-success"
-        (click)="openDialog()"
-      ></button>
+      <div>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-plus"
+          label="Nova O.S. QR-Code"
+          class="p-button-success"
+          (click)="openQRCodeDialog()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-plus"
+          label="Nova O.S. Manual"
+          class="p-button-success botao-manual"
+          (click)="openDialog()"
+        ></button>
+      </div>
     </div>
     <p-table
       [value]="dados"
@@ -138,288 +148,350 @@
   </p-card>
 
   <p-dialog
-  header="{{ dialogTitle }}"
-  [(visible)]="displayDialog"
-  [modal]="true"
-  [closable]="false"
-  [style]="{ width: '60rem' }"
-  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
->
-  <form [formGroup]="ordemServicoForm" (ngSubmit)="onSubmit()">
-    <div class="criacaoFormulario">
-      <div class="formulario">
-        <p-dropdown
-          [options]="equipamento"
-          optionLabel="number"
-          optionValue="id"
-          formControlName="equipamentId"
-          (onChange)="onEquipamentChange($event)"
-          placeholder="Selecione um equipamento"
-          pTooltip="Equipamento"
-          tooltipPosition="top"
-        ></p-dropdown>
-      </div>
-      <div class="formulario">
-        <p-dropdown
-          [options]="user"
-          optionLabel="name"
-          optionValue="id"
-          formControlName="requester"
-          (onChange)="onRequesterChange($event)"
-          pTooltip="Selecione um solicitante"
-          tooltipPosition="top"
-          placeholder="Selecione um solicitante"
-        ></p-dropdown>
-      </div>
-      <div class="formulario">
-        <p-dropdown
-          [options]="mecanicos"
-          formControlName="responsibleMechanics"
-          placeholder="Selecione os Mecânicos Responsáveis"
-          pTooltip="Mecânicos Responsáveis"
-          tooltipPosition="top"
-        ></p-dropdown>
-      </div>
-    </div>
-    <div class="criacaoFormulario">
-      <div class="formulario">
-        <p-dropdown
-          [options]="orderStatusOptions"
-          formControlName="orderStatus"
-          placeholder="Selecione o Status"
-          pTooltip="Status"
-          tooltipPosition="top"
-        ></p-dropdown>
-      </div>
-      <div class="formulario">
-        <input
-          pInputText
-          id="maintenanceLocation"
-          class="flex-auto"
-          formControlName="maintenanceLocation"
-          autocomplete="off"
-          placeholder="Local de Manutenção"
-          pTooltip="Local de Manutenção"
-          tooltipPosition="top"
-        />
-      </div>
-      <div class="formulario">
-        <input
-          pInputText
-          id="hourMeter"
-          class="flex-auto"
-          formControlName="hourMeter"
-          autocomplete="off"
-          type="number"
-          placeholder="Horímetro"
-          pTooltip="Horímetro"
-          tooltipPosition="top"
-        />
-      </div>
-    </div>
-    <div class="criacaoFormulario">
-      <div class="formulario">
-        <input
-          pInputText
-          id="requestedServicesDescription"
-          class="flex-auto"
-          formControlName="requestedServicesDescription"
-          autocomplete="off"
-          placeholder="Serviços Solicitados"
-          pTooltip="Serviços Solicitados"
-          tooltipPosition="top"
-        />
-      </div>
-      <div class="formulario">
-        <input
-          pInputText
-          id="pendingServicesDescription"
-          class="flex-auto"
-          formControlName="pendingServicesDescription"
-          autocomplete="off"
-          placeholder="Serviços Pendentes"
-          pTooltip="Serviços Pendentes"
-          tooltipPosition="top"
-        />
-      </div>
-      <div class="formulario">
-        <input
-          pInputText
-          id="completedServicesDescription"
-          class="flex-auto"
-          formControlName="completedServicesDescription"
-          autocomplete="off"
-          placeholder="Serviços Finalizados"
-          pTooltip="Serviços Finalizados"
-          tooltipPosition="top"
-        />
-      </div>
-    </div>
-
-    <h3>Valores gastos para fechamento de O.S</h3>
-
-    <div formGroupName="closing">
+    header="{{ dialogTitle }}"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: '60rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+    <form [formGroup]="ordemServicoForm" (ngSubmit)="onSubmit()">
       <div class="criacaoFormulario">
+        <div class="formulario">
+          <p-dropdown
+            [options]="equipamento"
+            optionLabel="number"
+            optionValue="id"
+            formControlName="equipamentId"
+            (onChange)="onEquipamentChange($event)"
+            placeholder="Selecione um equipamento"
+            pTooltip="Equipamento"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
         <div class="formulario">
           <p-dropdown
             [options]="user"
             optionLabel="name"
             optionValue="id"
-            formControlName="responsible"
-            placeholder="Selecione o Responsável"
-            pTooltip="Responsável"
+            formControlName="requester"
+            (onChange)="onRequesterChange($event)"
+            pTooltip="Selecione um solicitante"
+            tooltipPosition="top"
+            placeholder="Selecione um solicitante"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
+          <p-dropdown
+            [options]="mecanicos"
+            formControlName="responsibleMechanics"
+            placeholder="Selecione os Mecânicos Responsáveis"
+            pTooltip="Mecânicos Responsáveis"
             tooltipPosition="top"
           ></p-dropdown>
         </div>
       </div>
       <div class="criacaoFormulario">
         <div class="formulario">
-          <label for="quantity15w40">15w40</label>
+          <p-dropdown
+            [options]="orderStatusOptions"
+            formControlName="orderStatus"
+            placeholder="Selecione o Status"
+            pTooltip="Status"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
           <input
             pInputText
-            id="quantity15w40"
+            id="maintenanceLocation"
             class="flex-auto"
-            formControlName="quantity15w40"
+            formControlName="maintenanceLocation"
             autocomplete="off"
-            type="number"
-            placeholder="Quantidade 15w40"
-            pTooltip="Quantidade 15w40"
+            placeholder="Local de Manutenção"
+            pTooltip="Local de Manutenção"
             tooltipPosition="top"
           />
         </div>
         <div class="formulario">
-          <label for="quantityAw68">Aw68</label>
           <input
             pInputText
-            id="quantityAw68"
+            id="hourMeter"
             class="flex-auto"
-            formControlName="quantityAw68"
+            formControlName="hourMeter"
             autocomplete="off"
             type="number"
-            placeholder="Quantidade Aw68"
-            pTooltip="Quantidade Aw68"
-            tooltipPosition="top"
-          />
-        </div>
-        <div class="formulario">
-          <label for="quantity428">428</label>
-          <input
-            pInputText
-            id="quantity428"
-            class="flex-auto"
-            formControlName="quantity428"
-            autocomplete="off"
-            type="number"
-            placeholder="Quantidade 428"
-            pTooltip="Quantidade 428"
+            placeholder="Horímetro"
+            pTooltip="Horímetro"
             tooltipPosition="top"
           />
         </div>
       </div>
       <div class="criacaoFormulario">
         <div class="formulario">
-          <label for="quantity80W">80W</label>
           <input
             pInputText
-            id="quantity80W"
+            id="requestedServicesDescription"
             class="flex-auto"
-            formControlName="quantity80W"
+            formControlName="requestedServicesDescription"
             autocomplete="off"
-            type="number"
-            placeholder="Quantidade 80W"
-            pTooltip="Quantidade 80W"
+            placeholder="Serviços Solicitados"
+            pTooltip="Serviços Solicitados"
             tooltipPosition="top"
           />
         </div>
         <div class="formulario">
-          <label for="quantity85w90">85w90</label>
           <input
             pInputText
-            id="quantity85w90"
+            id="pendingServicesDescription"
             class="flex-auto"
-            formControlName="quantity85w90"
+            formControlName="pendingServicesDescription"
             autocomplete="off"
-            type="number"
-            placeholder="Quantidade 85w90"
-            pTooltip="Quantidade 85w90"
+            placeholder="Serviços Pendentes"
+            pTooltip="Serviços Pendentes"
             tooltipPosition="top"
           />
         </div>
         <div class="formulario">
-          <label for="laborValue">Mão de Obra</label>
           <input
             pInputText
-            id="laborValue"
+            id="completedServicesDescription"
             class="flex-auto"
-            formControlName="laborValue"
+            formControlName="completedServicesDescription"
             autocomplete="off"
-            type="number"
-            placeholder="Valor da Mão de Obra"
-            pTooltip="Valor da Mão de Obra"
+            placeholder="Serviços Finalizados"
+            pTooltip="Serviços Finalizados"
             tooltipPosition="top"
           />
         </div>
       </div>
-      <div class="criacaoFormulario">
-        <div class="formulario">
-          <label for="transportation">Transporte</label>
-          <input
-            pInputText
-            id="transportation"
-            class="flex-auto"
-            formControlName="transportation"
-            autocomplete="off"
-            type="number"
-            placeholder="Transporte"
-            pTooltip="Transporte"
-            tooltipPosition="top"
-          />
+
+      <h3>Valores gastos para fechamento de O.S</h3>
+
+      <div formGroupName="closing">
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <p-dropdown
+              [options]="user"
+              optionLabel="name"
+              optionValue="id"
+              formControlName="responsible"
+              placeholder="Selecione o Responsável"
+              pTooltip="Responsável"
+              tooltipPosition="top"
+            ></p-dropdown>
+          </div>
         </div>
-        <div class="formulario">
-          <label for="thirdParties">Terceiros</label>
-          <input
-            pInputText
-            id="thirdParties"
-            class="flex-auto"
-            formControlName="thirdParties"
-            autocomplete="off"
-            type="number"
-            placeholder="Terceiros"
-            pTooltip="Terceiros"
-            tooltipPosition="top"
-          />
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="quantity15w40">15w40</label>
+            <input
+              pInputText
+              id="quantity15w40"
+              class="flex-auto"
+              formControlName="quantity15w40"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 15w40"
+              pTooltip="Quantidade 15w40"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantityAw68">Aw68</label>
+            <input
+              pInputText
+              id="quantityAw68"
+              class="flex-auto"
+              formControlName="quantityAw68"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade Aw68"
+              pTooltip="Quantidade Aw68"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantity428">428</label>
+            <input
+              pInputText
+              id="quantity428"
+              class="flex-auto"
+              formControlName="quantity428"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 428"
+              pTooltip="Quantidade 428"
+              tooltipPosition="top"
+            />
+          </div>
         </div>
-        <div class="formulario">
-          <label for="oils">Óleos</label>
-          <input
-            pInputText
-            id="oils"
-            class="flex-auto"
-            formControlName="oils"
-            autocomplete="off"
-            type="number"
-            placeholder="Óleos"
-            pTooltip="Óleos"
-            tooltipPosition="top"
-          />
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="quantity80W">80W</label>
+            <input
+              pInputText
+              id="quantity80W"
+              class="flex-auto"
+              formControlName="quantity80W"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 80W"
+              pTooltip="Quantidade 80W"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantity85w90">85w90</label>
+            <input
+              pInputText
+              id="quantity85w90"
+              class="flex-auto"
+              formControlName="quantity85w90"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 85w90"
+              pTooltip="Quantidade 85w90"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="laborValue">Mão de Obra</label>
+            <input
+              pInputText
+              id="laborValue"
+              class="flex-auto"
+              formControlName="laborValue"
+              autocomplete="off"
+              type="number"
+              placeholder="Valor da Mão de Obra"
+              pTooltip="Valor da Mão de Obra"
+              tooltipPosition="top"
+            />
+          </div>
+        </div>
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="transportation">Transporte</label>
+            <input
+              pInputText
+              id="transportation"
+              class="flex-auto"
+              formControlName="transportation"
+              autocomplete="off"
+              type="number"
+              placeholder="Transporte"
+              pTooltip="Transporte"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="thirdParties">Terceiros</label>
+            <input
+              pInputText
+              id="thirdParties"
+              class="flex-auto"
+              formControlName="thirdParties"
+              autocomplete="off"
+              type="number"
+              placeholder="Terceiros"
+              pTooltip="Terceiros"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="oils">Óleos</label>
+            <input
+              pInputText
+              id="oils"
+              class="flex-auto"
+              formControlName="oils"
+              autocomplete="off"
+              type="number"
+              placeholder="Óleos"
+              pTooltip="Óleos"
+              tooltipPosition="top"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <div class="buttons">
-      <p-button
-        label="Cancelar"
-        severity="danger"
-        (click)="displayDialog = false"
-      ></p-button>
-      <p-button
-        class="button-salvar"
-        label="Salvar"
-        type="submit"
-        [disabled]="ordemServicoForm.invalid"
-      ></p-button>
-    </div>
-  </form>
-</p-dialog>
+      <div class="buttons">
+        <p-button
+          label="Cancelar"
+          severity="danger"
+          (click)="displayDialog = false"
+        ></p-button>
+        <p-button
+          class="button-salvar"
+          label="Salvar"
+          type="submit"
+          [disabled]="ordemServicoForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <p-dialog
+    header="Nova O.S. QR-Code"
+    [(visible)]="displayQRCodeDialog"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: '30rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+    <form [formGroup]="qrCodeForm" (ngSubmit)="onQRCodeSubmit()">
+        <div class="formulario">
+          <p-dropdown
+            [options]="equipamento"
+            optionLabel="number"
+            optionValue="id"
+            formControlName="equipamentId"
+            placeholder="Selecione um equipamento"
+            pTooltip="Equipamento"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="hourMeter"
+            class="flex-auto"
+            formControlName="hourMeter"
+            autocomplete="off"
+            type="number"
+            placeholder="Horímetro"
+            pTooltip="Horímetro"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="requestedServicesDescription"
+            class="flex-auto"
+            formControlName="requestedServicesDescription"
+            autocomplete="off"
+            placeholder="Serviços Solicitados"
+            pTooltip="Serviços Solicitados"
+            tooltipPosition="top"
+          />
+        </div>
+
+      <div class="buttons">
+        <p-button
+          label="Cancelar"
+          severity="danger"
+          (click)="displayQRCodeDialog = false"
+        ></p-button>
+        <p-button
+          class="button-salvar"
+          label="Salvar"
+          type="submit"
+          [disabled]="qrCodeForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
 </div>
 
 <div class="card flex justify-content-center gap-2">

@@ -51,6 +51,8 @@ export class OrdemServicoComponent implements OnInit {
   dadosOriginais: WorkOrderDto[] = [];
   filters: { [key: string]: string } = {};
   ordemServicoForm: FormGroup;
+  qrCodeForm: FormGroup;
+  displayQRCodeDialog: boolean = false;
   displayDialog: boolean = false;
   displayCompleteDialog: boolean = false;
   dialogTitle: string = '';
@@ -74,6 +76,12 @@ export class OrdemServicoComponent implements OnInit {
     private router: Router,
     private usuarioService: UserService,
   ) {
+    this.qrCodeForm = this.fb.group({
+      equipamentId: ['', Validators.required],
+      hourMeter: ['', Validators.required],
+      requestedServicesDescription: ['', Validators.required]
+    });
+    
     this.ordemServicoForm = this.fb.group({
       equipamentId: [null, Validators.required],
       requester: [null],
@@ -204,8 +212,8 @@ export class OrdemServicoComponent implements OnInit {
   }
 
   createOrdemServico() {
-    const newOrdemServico: WorkOrderCreateDto = this.ordemServicoForm.value;
-    this.ordemServicoService.createOrdemServico(newOrdemServico).subscribe({
+    const newOrdemServico: WorkOrderDto = this.ordemServicoForm.value;
+    this.ordemServicoService.createCompleteOrdemServico(newOrdemServico).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
@@ -238,5 +246,39 @@ export class OrdemServicoComponent implements OnInit {
         return value?.toString().toLowerCase().includes(this.filters[key]);
       });
     });
+  }
+
+  openQRCodeDialog() {
+    this.qrCodeForm.reset(); // Reseta o formulário ao abrir o diálogo
+    this.displayQRCodeDialog = true;
+  }
+
+  closeQRCodeDialog() {
+    this.qrCodeForm.reset(); // Reseta o formulário ao fechar o diálogo
+    this.displayQRCodeDialog = false;
+  }
+
+  onQRCodeSubmit() {
+    if (this.qrCodeForm.valid) {
+      const newOrdemServico: WorkOrderCreateDto = this.qrCodeForm.value;
+      this.ordemServicoService.createOrdemServico(newOrdemServico).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sucesso',
+            detail: 'Ordem de Serviço criada com sucesso.',
+          });
+          this.displayQRCodeDialog = false;
+          this.getOrdemServico();
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao criar Ordem de Serviço.',
+          });
+        }
+      });
+    }
   }
 }
