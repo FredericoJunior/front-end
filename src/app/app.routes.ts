@@ -9,6 +9,7 @@ import { UsuarioComponent } from './pages/usuario/usuario.component';
 import { NotificacaoComponent } from './pages/notificacao/notificacao.component'
 import { AuthGuard } from './guards/auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { AlterarSenhaComponent } from './pages/alterar-senha/alterar-senha.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -20,5 +21,6 @@ export const routes: Routes = [
   { path: 'relatorio', component: RelatorioComponent, canActivate: [AuthGuard, PermissionGuard], data: { permissions: ['report:read'] } },
   { path: 'usuario', component: UsuarioComponent, canActivate: [AuthGuard, PermissionGuard], data: { permissions: ['user:read'] } },
   { path: 'notificacao', component: NotificacaoComponent, canActivate: [AuthGuard]},
+  { path: 'alterar-senha', component: AlterarSenhaComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }
 ];

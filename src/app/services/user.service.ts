@@ -96,7 +96,7 @@ export class UserService {
 
   updateUsuario(userDto: UserDto): Observable<UserDto> {
     return this.http
-      .put<UserDto>(this.apiUrl, userDto, { headers: this.getHeaders() })
+      .put<UserDto>(`${this.apiUrl}update`, userDto, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
@@ -121,22 +121,6 @@ export class UserService {
         })
       );
   }
-
-  deleteUsuario(id: number): Observable<void> {
-    return this.http
-      .delete<void>(`${this.apiUrl}${id}`, { headers: this.getHeaders() })
-      .pipe(
-        catchError((error) => {
-          if (error.status === 403) {
-            return this.handle403Error(() => this.deleteUsuario(id));
-          } else {
-            return this.handleError(error);
-          }
-        })
-      );
-  }
-
-
 
   getAllMecanicos(): Observable<UserDto[]> {
     return this.http

@@ -179,6 +179,7 @@ export class UsuarioComponent {
             });
           }
           this.displayDialog = false;
+          this.getUsuarios();
         },
         error: (error) => {
           console.error(error);
@@ -261,27 +262,30 @@ export class UsuarioComponent {
       return;
     }
 
-    this.usuarioService.deleteUsuario(item.id).subscribe({
-      next: () => {
-        this.dados = this.dados.filter((d) => d.id !== item.id);
-        this.dadosOriginais = this.dadosOriginais.filter(
-          (d) => d.id !== item.id
-        );
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Confirmado',
-          detail: 'Usuário deletado',
-        });
-      },
-      error: (error) => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao deletar usuário',
-        });
-      },
-    });
+    console.log(item)
+
+    // this.usuarioService.updateUsuario(item).subscribe({
+    //   next: () => {
+    //     this.dados = this.dados.filter((d) => d.id !== item.id);
+    //     this.dadosOriginais = this.dadosOriginais.filter(
+    //       (d) => d.id !== item.id
+    //     );
+    //     this.messageService.add({
+    //       severity: 'info',
+    //       summary: 'Confirmado',
+    //       detail: 'Usuário deletado',
+    //     });
+    //     this.getUsuarios();
+    //   },
+    //   error: (error) => {
+    //     console.error(error);
+    //     this.messageService.add({
+    //       severity: 'error',
+    //       summary: 'Erro',
+    //       detail: 'Erro ao deletar usuário',
+    //     });
+    //   },
+    // });
   }
 
   applyFilter(event: Event, field: string) {
