@@ -11,7 +11,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { PasswordModule } from 'primeng/password';
 import { DropdownModule } from 'primeng/dropdown';
 
 import { MenuComponent } from '../menu/menu.component';
@@ -33,7 +32,6 @@ import { RegisterDto, UserDto } from './usuario.model';
     ToastModule,
     ConfirmDialogModule,
     DropdownModule,
-    PasswordModule,
   ],
   templateUrl: './usuario.component.html',
   styleUrls: ['./usuario.component.scss'],
@@ -66,9 +64,8 @@ export class UsuarioComponent {
     this.usuarioForm = this.fb.group({
       id: [null],
       name: ['', [Validators.required, Validators.maxLength(100)]],
-      login: ['', [Validators.required, Validators.maxLength(50)]],
+      login: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
       role: ['', [Validators.required, Validators.maxLength(50)]],
-      password: ['', [Validators.required, Validators.maxLength(100)]],
     });
 
     const userPermissions = JSON.parse(
@@ -205,7 +202,6 @@ export class UsuarioComponent {
       const registerDto: RegisterDto = {
         name: this.selectedItem.name,
         login: this.selectedItem.login,
-        password: this.selectedItem.password!,
         role: this.selectedItem.role,
       };
       this.usuarioService.createUsuario(registerDto).subscribe({

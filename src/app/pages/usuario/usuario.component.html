@@ -162,35 +162,6 @@
           </small>
         </div>
       </div>
-      <div class="formulario">
-        <label for="password" class="font-semibold w-6rem">Senha: </label>
-        <p-password
-          id="password"
-          [toggleMask]="true"
-          formControlName="password"
-          minlength="8"
-          autocomplete="new-password"
-          [feedback]="false"
-          class="flex-auto"
-          placeholder="Digite a senha"
-        ></p-password>
-        <div
-          *ngIf="
-            usuarioForm.controls['password'].invalid &&
-            (usuarioForm.controls['password'].dirty || usuarioForm.controls['password'].touched)
-          "
-        >
-          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['required']">
-            Senha é obrigatória.
-          </small>
-          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['minlength']">
-            A senha deve ter pelo menos 8 caracteres.
-          </small>
-          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['maxlength']">
-            Senha deve ter no máximo 100 caracteres.
-          </small>
-        </div>
-      </div>
       <div class="buttons">
         <p-button
           label="Cancelar"
