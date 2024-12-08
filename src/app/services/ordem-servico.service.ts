@@ -90,7 +90,6 @@ export class OrdemServicoService {
   }
 
   createCompleteOrdemServico(dto: WorkOrderDto): Observable<WorkOrderDto> {
-    console.log("🚀 ~ file: ordem-servico.service.ts:93 ~ OrdemServicoService ~ createCompleteOrdemServico ~ dto:", dto);
     return this.http.post<WorkOrderDto>(`${this.apiUrl}create`, dto, {
       headers: this.getHeaders(),
     }).pipe(
