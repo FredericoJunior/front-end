@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
@@ -42,15 +46,16 @@ export class NotificaoService {
     );
   }
 
-  getAllNotificacao(): Observable<[]> {
+  listNotificationsByUser(): Observable<any> {
     return this.http
-      .get<[]>(`${this.apiUrl}`, {
+      .get<any>(`${this.apiUrl}`, {
         headers: this.getHeaders(),
       })
       .pipe(
         catchError((error) => {
+          console.log("🚀 ~ file: notificacao.service.ts:56 ~ NotificaoService ~ catchError ~ error:", error);
           if (error.status === 403) {
-            return this.handle403Error(() => this.getAllNotificacao());
+            return this.handle403Error(() => this.listNotificationsByUser());
           } else {
             return this.handleError(error);
           }
@@ -58,15 +63,16 @@ export class NotificaoService {
       );
   }
 
-  getNotificacaoId(id: number): Observable<void> {
+  readNotification(id: number): Observable<void> {
     return this.http
       .get<void>(`${this.apiUrl}${id}`, {
         headers: this.getHeaders(),
       })
       .pipe(
         catchError((error) => {
+          console.log("🚀 ~ file: notificacao.service.ts:72 ~ NotificaoService ~ catchError ~ error:", error);
           if (error.status === 403) {
-            return this.handle403Error(() => this.getNotificacaoId(id));
+            return this.handle403Error(() => this.readNotification(id));
           } else {
             return this.handleError(error);
           }
