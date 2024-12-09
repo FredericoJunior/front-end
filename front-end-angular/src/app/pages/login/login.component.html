@@ -1,0 +1,71 @@
+<body>
+  <p-card>
+    <ng-template pTemplate="header">
+      <img
+        alt="Logo da Terrasa Engenharia"
+        src="https://static.wixstatic.com/media/50c2bb_7861f0cb81a64360b019fd909d817b00~mv2.png/v1/fill/w_398,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/DQb5NoOW.png"
+      />
+    </ng-template>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="p-fluid">
+        <div class="p-field">
+          <label for="email">Usuário:</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            [(ngModel)]="email"
+            email
+            autofocus
+            pInputText
+          />
+          <div *ngIf="loginForm.submitted && loginForm.controls['email']?.errors">
+            <small class="p-error"*ngIf="loginForm.controls['email']?.errors?.['required']">
+              O e-mail é obrigatório.
+            </small>
+            <small class="p-error" *ngIf="loginForm.controls['email']?.errors?.['email']">
+              E-mail inválido.
+            </small>
+          </div>
+        </div>
+
+        <div class="p-field">
+          <label for="password">Senha:</label>
+          <p-password
+            id="password"
+            name="password"
+            required
+            minlength="8"
+            autocomplete="current-password"
+            [toggleMask]="true"
+            [(ngModel)]="password"
+            [feedback]="false"
+          />
+          <div *ngIf=" loginForm.submitted && loginForm.controls['password']?.errors">
+            <small class="p-error" *ngIf="loginForm.controls['password']?.errors?.['required']">
+              A senha é obrigatória.
+            </small>
+            <small class="p-error"*ngIf="loginForm.controls['password']?.errors?.['minlength']">
+              A senha deve ter pelo menos 8 caracteres.
+            </small>
+          </div>
+        </div>
+
+        <div class="p-field">
+          <p-button
+            [disabled]="loginForm.invalid"
+            type="submit"
+            label="Confirmar"
+            severity="success"
+            [raised]="true"
+            [rounded]="true"
+          />
+        </div>
+      </div>
+    </form>
+  </p-card>
+  <p-toast></p-toast>
+</body>

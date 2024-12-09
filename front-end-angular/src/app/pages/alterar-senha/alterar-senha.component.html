@@ -1,0 +1,117 @@
+<app-menu></app-menu>
+<div class="body">
+  <p-card class="card" header="Alterar senha">
+    <p class="header">É obrigatório alterar senha no primeiro acesso ou quando ela é redefinida!</p>
+
+    <form [formGroup]="alterarSenhaForm" (ngSubmit)="onSubmit()">
+      <div class="p-fluid">
+        <div class="p-field">
+          <label for="password">Nova Senha:</label>
+          <p-password
+            id="password"
+            formControlName="password"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            [toggleMask]="true"
+            [feedback]="false"
+          ></p-password>
+          <div
+            *ngIf="
+              alterarSenhaForm.controls['password'].invalid &&
+              alterarSenhaForm.controls['password'].touched
+            "
+          >
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['required']"
+            >
+              A senha é obrigatória.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['minlength']"
+            >
+              A senha deve ter pelo menos 8 caracteres.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['number']"
+            >
+              A senha deve conter pelo menos um número.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['specialChar']"
+            >
+              A senha deve conter pelo menos um caractere especial.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['upperCase']"
+            >
+              A senha deve conter pelo menos uma letra maiúscula.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['password'].errors?.['lowerCase']"
+            >
+              A senha deve conter pelo menos uma letra minúscula.
+            </small>
+          </div>
+        </div>
+
+        <div class="p-field">
+          <label for="confirmPassword">Confirmar Senha:</label>
+          <p-password
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            required
+            minlength="8"
+            autocomplete="new-password"
+            [toggleMask]="true"
+            [feedback]="false"
+          ></p-password>
+          <div
+            *ngIf="
+              alterarSenhaForm.controls['confirmPassword'].invalid &&
+              alterarSenhaForm.controls['confirmPassword'].touched
+            "
+          >
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['confirmPassword'].errors?.['required']"
+            >
+              A confirmação da senha é obrigatória.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.controls['confirmPassword'].errors?.['minlength']"
+            >
+              A confirmação da senha deve ter pelo menos 8 caracteres.
+            </small>
+            <small
+              class="p-error"
+              *ngIf="alterarSenhaForm.errors?.['mismatch']"
+            >
+              As senhas não coincidem.
+            </small>
+          </div>
+        </div>
+
+        <div class="p-field">
+          <p-button
+            [disabled]="alterarSenhaForm.invalid"
+            type="submit"
+            label="Alterar Senha"
+            severity="success"
+            [raised]="true"
+            [rounded]="true"
+          ></p-button>
+        </div>
+      </div>
+    </form>
+  </p-card>
+</div>
+
+<p-toast></p-toast>

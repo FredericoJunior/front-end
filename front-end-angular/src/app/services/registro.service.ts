@@ -7,12 +7,13 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { ReportsFilterDto } from '../pages/relatorio/relatorio.models';
 
 @Injectable({
   providedIn: 'root',
 })
-export class NotificaoService {
-  private apiUrl = 'v1/private/notification/send-notification';
+export class RegistroService {
+  private apiUrl = 'https://devterrasa.com/java/v1/private/reports/';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -46,16 +47,16 @@ export class NotificaoService {
     );
   }
 
-  listNotificationsByUser(): Observable<any> {
+  getRelatorioExcel(filterDto: ReportsFilterDto): Observable<Blob> {
     return this.http
-      .get<any>(`${this.apiUrl}`, {
+      .post(`${this.apiUrl}excel`, filterDto, {
         headers: this.getHeaders(),
+        responseType: 'blob',
       })
       .pipe(
         catchError((error) => {
-          console.log("🚀 ~ file: notificacao.service.ts:56 ~ NotificaoService ~ catchError ~ error:", error);
           if (error.status === 403) {
-            return this.handle403Error(() => this.listNotificationsByUser());
+            return this.handle403Error(() => this.getRelatorioExcel(filterDto));
           } else {
             return this.handleError(error);
           }
@@ -63,16 +64,16 @@ export class NotificaoService {
       );
   }
 
-  readNotification(id: number): Observable<void> {
+  getRelatorioPdf(filterDto: ReportsFilterDto): Observable<Blob> {
     return this.http
-      .get<void>(`${this.apiUrl}${id}`, {
+      .post(`${this.apiUrl}pdf`, filterDto, {
         headers: this.getHeaders(),
+        responseType: 'blob',
       })
       .pipe(
         catchError((error) => {
-          console.log("🚀 ~ file: notificacao.service.ts:72 ~ NotificaoService ~ catchError ~ error:", error);
           if (error.status === 403) {
-            return this.handle403Error(() => this.readNotification(id));
+            return this.handle403Error(() => this.getRelatorioPdf(filterDto));
           } else {
             return this.handleError(error);
           }

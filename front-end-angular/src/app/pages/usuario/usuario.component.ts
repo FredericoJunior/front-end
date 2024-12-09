@@ -240,6 +240,7 @@ export class UsuarioComponent {
       acceptIcon: 'none',
       rejectIcon: 'none',
       accept: () => {
+        this.deleteItem(item);
       },
       reject: () => {
         this.messageService.add({
@@ -249,6 +250,42 @@ export class UsuarioComponent {
         });
       },
     });
+  }
+
+  deleteItem(item: UserDto) {
+    if (!this.canDelete) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Você não tem permissão para deletar usuários.',
+      });
+      return;
+    }
+
+    console.log(item)
+
+    // this.usuarioService.updateUsuario(item).subscribe({
+    //   next: () => {
+    //     this.dados = this.dados.filter((d) => d.id !== item.id);
+    //     this.dadosOriginais = this.dadosOriginais.filter(
+    //       (d) => d.id !== item.id
+    //     );
+    //     this.messageService.add({
+    //       severity: 'info',
+    //       summary: 'Confirmado',
+    //       detail: 'Usuário deletado',
+    //     });
+    //     this.getUsuarios();
+    //   },
+    //   error: (error) => {
+    //     console.error(error);
+    //     this.messageService.add({
+    //       severity: 'error',
+    //       summary: 'Erro',
+    //       detail: 'Erro ao deletar usuário',
+    //     });
+    //   },
+    // });
   }
 
   applyFilter(event: Event, field: string) {

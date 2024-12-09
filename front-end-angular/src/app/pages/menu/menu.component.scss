@@ -1,0 +1,33 @@
+.card {
+    width: 100%;
+    border-bottom: 0.3rem solid rgb(160, 44, 44);
+}
+
+.p-menuitem-link .ml-2 {
+    margin-left: 0.5rem;
+}
+
+:host ::ng-deep {
+    .p-menubar {
+        background-color: rgb(33, 37, 41);
+        border: none;
+        border-radius: 0;
+    }
+
+    @media (min-width: 1024px) {
+        .p-menubar .p-menuitem:last-child {
+          position: absolute;
+          right: 0;
+          top: 0;
+          margin: 0.5rem;
+        }
+      }
+}
+
+.fixed-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Certifique-se de que o menu esteja acima de outros elementos */
+  }

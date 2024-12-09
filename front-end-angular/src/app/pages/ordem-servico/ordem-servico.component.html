@@ -1,0 +1,476 @@
+<app-menu></app-menu>
+<div class="body">
+  <p class="header">Ordens de Serviço</p>
+  <p-card>
+    <div class="header-table">
+      <button
+        pButton
+        pRipple
+        icon="pi pi-refresh"
+        (click)="getOrdemServico()"
+        label="Atualizar"
+      ></button>
+      <div>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-plus"
+          label="Nova O.S. QR-Code"
+          class="p-button-success"
+          (click)="openQRCodeDialog()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-plus"
+          label="Nova O.S. Manual"
+          class="p-button-success botao-manual"
+          (click)="openDialog()"
+        ></button>
+      </div>
+    </div>
+    <p-table
+      [value]="dados"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [globalFilterFields]="[
+        'id',
+        'equipament.number',
+        'orderStatus',
+        'requestedServicesDescription',
+        'requester.name',
+        'issueDate'
+      ]"
+      autoLayout="true"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id" /></th>
+          <th pSortableColumn="equipament.number">
+            Equipamento <p-sortIcon field="equipament.number" />
+          </th>
+          <th pSortableColumn="orderStatus">
+            Status <p-sortIcon field="orderStatus" />
+          </th>
+          <th pSortableColumn="requestedServicesDescription">
+            Descrição dos Serviços
+            <p-sortIcon field="requestedServicesDescription" />
+          </th>
+          <th pSortableColumn="requester.name">
+            Solicitante <p-sortIcon field="requester.name" />
+          </th>
+          <th pSortableColumn="issueDate">
+            Data de Emissão <p-sortIcon field="issueDate" />
+          </th>
+          <th>Opções</th>
+        </tr>
+        <tr>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'id')"
+              placeholder="Filtrar por ID"
+              class="filter-input"
+            />
+          </th>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'equipament.number')"
+              placeholder="Filtrar por Equipamento"
+              class="filter-input"
+            />
+          </th>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'orderStatus')"
+              placeholder="Filtrar por Status"
+              class="filter-input"
+            />
+          </th>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'requestedServicesDescription')"
+              placeholder="Filtrar por Descrição"
+              class="filter-input"
+            />
+          </th>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'requester.name')"
+              placeholder="Filtrar por Solicitante"
+              class="filter-input"
+            />
+          </th>
+          <th>
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'issueDate')"
+              placeholder="Filtrar por Data de Emissão"
+              class="filter-input"
+            />
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.id }}</td>
+          <td>{{ item.equipament.number }}</td>
+          <td>{{ item.orderStatus }}</td>
+          <td>{{ item.requestedServicesDescription }}</td>
+          <td>{{ item.requester.name }}</td>
+          <td>{{ item.issueDate | date : "dd/MM/yyyy" }}</td>
+          <td>
+            <div class="d-flex">
+              <button
+                pButton
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-info p-button-sm"
+                title="Editar Ordem de Serviço"
+                (click)="openDialog(item)"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <p-dialog
+    header="{{ dialogTitle }}"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: '60rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+    <form [formGroup]="ordemServicoForm" (ngSubmit)="onSubmit()">
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <p-dropdown
+            [options]="equipamento"
+            optionLabel="number"
+            formControlName="equipament"
+            (onChange)="onEquipamentChange($event)"
+            placeholder="Selecione um equipamento"
+            pTooltip="Equipamento"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
+          <p-multiSelect
+            [options]="mecanicos"
+            optionLabel="name"
+            formControlName="responsibleMechanics"
+            (onChange)="onMechanicsChange($event)"
+            placeholder="Selecione os Mecânicos Responsáveis"
+            pTooltip="Mecânicos Responsáveis"
+            tooltipPosition="top"
+          ></p-multiSelect>
+        </div>
+      </div>
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <p-dropdown
+            [options]="orderStatusOptions"
+            formControlName="orderStatus"
+            placeholder="Selecione o Status"
+            pTooltip="Status"
+            tooltipPosition="top"
+          ></p-dropdown>
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="maintenanceLocation"
+            class="flex-auto"
+            formControlName="maintenanceLocation"
+            autocomplete="off"
+            placeholder="Local de Manutenção"
+            pTooltip="Local de Manutenção"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="hourMeter"
+            class="flex-auto"
+            formControlName="hourMeter"
+            autocomplete="off"
+            type="number"
+            placeholder="Horímetro"
+            pTooltip="Horímetro"
+            tooltipPosition="top"
+          />
+        </div>
+      </div>
+      <div class="criacaoFormulario">
+        <div class="formulario">
+          <input
+            pInputText
+            id="requestedServicesDescription"
+            class="flex-auto"
+            formControlName="requestedServicesDescription"
+            autocomplete="off"
+            placeholder="Serviços Solicitados"
+            pTooltip="Serviços Solicitados"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="pendingServicesDescription"
+            class="flex-auto"
+            formControlName="pendingServicesDescription"
+            autocomplete="off"
+            placeholder="Serviços Pendentes"
+            pTooltip="Serviços Pendentes"
+            tooltipPosition="top"
+          />
+        </div>
+        <div class="formulario">
+          <input
+            pInputText
+            id="completedServicesDescription"
+            class="flex-auto"
+            formControlName="completedServicesDescription"
+            autocomplete="off"
+            placeholder="Serviços Finalizados"
+            pTooltip="Serviços Finalizados"
+            tooltipPosition="top"
+          />
+        </div>
+      </div>
+
+      <h3>Valores gastos para fechamento de O.S</h3>
+
+      <div formGroupName="closing">
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="quantity15w40">15w40</label>
+            <input
+              pInputText
+              id="quantity15w40"
+              class="flex-auto"
+              formControlName="quantity15w40"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 15w40"
+              pTooltip="Quantidade 15w40"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantityAw68">Aw68</label>
+            <input
+              pInputText
+              id="quantityAw68"
+              class="flex-auto"
+              formControlName="quantityAw68"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade Aw68"
+              pTooltip="Quantidade Aw68"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantity428">428</label>
+            <input
+              pInputText
+              id="quantity428"
+              class="flex-auto"
+              formControlName="quantity428"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 428"
+              pTooltip="Quantidade 428"
+              tooltipPosition="top"
+            />
+          </div>
+        </div>
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="quantity80W">80W</label>
+            <input
+              pInputText
+              id="quantity80W"
+              class="flex-auto"
+              formControlName="quantity80W"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 80W"
+              pTooltip="Quantidade 80W"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="quantity85w90">85w90</label>
+            <input
+              pInputText
+              id="quantity85w90"
+              class="flex-auto"
+              formControlName="quantity85w90"
+              autocomplete="off"
+              type="number"
+              placeholder="Quantidade 85w90"
+              pTooltip="Quantidade 85w90"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="laborValue">Mão de Obra</label>
+            <input
+              pInputText
+              id="laborValue"
+              class="flex-auto"
+              formControlName="laborValue"
+              autocomplete="off"
+              type="number"
+              placeholder="Valor da Mão de Obra"
+              pTooltip="Valor da Mão de Obra"
+              tooltipPosition="top"
+            />
+          </div>
+        </div>
+        <div class="criacaoFormulario">
+          <div class="formulario">
+            <label for="transportation">Transporte</label>
+            <input
+              pInputText
+              id="transportation"
+              class="flex-auto"
+              formControlName="transportation"
+              autocomplete="off"
+              type="number"
+              placeholder="Transporte"
+              pTooltip="Transporte"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="thirdParties">Terceiros</label>
+            <input
+              pInputText
+              id="thirdParties"
+              class="flex-auto"
+              formControlName="thirdParties"
+              autocomplete="off"
+              type="number"
+              placeholder="Terceiros"
+              pTooltip="Terceiros"
+              tooltipPosition="top"
+            />
+          </div>
+          <div class="formulario">
+            <label for="oils">Óleos</label>
+            <input
+              pInputText
+              id="oils"
+              class="flex-auto"
+              formControlName="oils"
+              autocomplete="off"
+              type="number"
+              placeholder="Óleos"
+              pTooltip="Óleos"
+              tooltipPosition="top"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <p-button
+          label="Cancelar"
+          severity="danger"
+          (click)="displayDialog = false"
+        ></p-button>
+        <p-button
+          class="button-salvar"
+          label="Salvar"
+          type="submit"
+          [disabled]="ordemServicoForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <p-dialog
+    header="Nova O.S. QR-Code"
+    [(visible)]="displayQRCodeDialog"
+    [modal]="true"
+    [closable]="false"
+    [style]="{ width: '30rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+    <form [formGroup]="qrCodeForm" (ngSubmit)="onQRCodeSubmit()">
+      <div class="formulario">
+        <p-dropdown
+          [options]="equipamento"
+          optionLabel="number"
+          formControlName="equipamentId"
+          optionValue="id"
+          placeholder="Selecione um equipamento"
+          pTooltip="Equipamento"
+          tooltipPosition="top"
+        ></p-dropdown>
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="hourMeter"
+          class="flex-auto"
+          formControlName="hourMeter"
+          autocomplete="off"
+          type="number"
+          placeholder="Horímetro"
+          pTooltip="Horímetro"
+          tooltipPosition="top"
+        />
+      </div>
+      <div class="formulario">
+        <input
+          pInputText
+          id="requestedServicesDescription"
+          class="flex-auto"
+          formControlName="requestedServicesDescription"
+          autocomplete="off"
+          placeholder="Serviços Solicitados"
+          pTooltip="Serviços Solicitados"
+          tooltipPosition="top"
+        />
+      </div>
+
+      <div class="buttons">
+        <p-button
+          label="Cancelar"
+          severity="danger"
+          (click)="displayQRCodeDialog = false"
+        ></p-button>
+        <p-button
+          class="button-salvar"
+          label="Salvar"
+          type="submit"
+          [disabled]="qrCodeForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+</div>
+
+<div class="card flex justify-content-center gap-2">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>

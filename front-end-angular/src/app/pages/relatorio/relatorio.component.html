@@ -1,0 +1,39 @@
+<app-menu></app-menu>
+<div class="body">
+  <h2 class="headerRelatorio">Relatórios</h2>
+
+  <p-card header="Ordem de Serviço">
+    <form [formGroup]="relatorioForm" class="form-container"> 
+      <div class="date-range">
+        <label>Escolha uma data:</label>
+        <p-calendar [showIcon]="true" formControlName="startDate" dateFormat="dd/mm/yy" placeholder="Data Início"></p-calendar>
+        <p-calendar [showIcon]="true" formControlName="endDate" dateFormat="dd/mm/yy" placeholder="Data Fim"></p-calendar>
+      </div>
+
+      <div class="checkbox-group">
+        <label>
+          <p-checkbox formControlName="completedServices" binary="true"></p-checkbox>
+          Histórico de serviços realizados
+        </label>
+        <label>
+          <p-checkbox formControlName="closure" binary="true"></p-checkbox>
+          Custos envolvidos
+        </label>
+        <label>
+          <p-checkbox formControlName="pendingServices" binary="true"></p-checkbox>
+          Status dos serviços pendentes
+        </label>
+      </div>
+
+      <div class="btn-container">
+        <button severity="success" pButton type="button" label="Gerar Excel" class="btn" (click)="downloadExcelReport()"></button>
+        <button severity="danger" pButton type="button" label="Gerar PDF" class="btn" (click)="downloadPdfReport()"></button>
+      </div>
+    </form>
+  </p-card>
+</div>
+
+<div class="card flex justify-content-center gap-2">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>

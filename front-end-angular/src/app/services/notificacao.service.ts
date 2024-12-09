@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class NotificaoService {
-  private apiUrl = 'v1/private/notification/send-notification';
+  private apiUrl = 'v1/private/notification/';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

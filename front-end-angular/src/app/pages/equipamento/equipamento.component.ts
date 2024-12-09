@@ -1,25 +1,23 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DropdownModule } from 'primeng/dropdown';
+import { ToastModule } from 'primeng/toast';
 
 import { MenuComponent } from '../menu/menu.component';
-
-import { UserService } from '../../services/user.service';
-import { RegisterDto, UserDto } from './usuario.model';
+import { EquipamentoService } from '../../services/equipamento.service';
+import { EquipamentDto } from './equipamento.model';
 
 @Component({
-  selector: 'app-usuario',
+  selector: 'app-equipamento',
   standalone: true,
   imports: [
     TableModule,
@@ -31,23 +29,21 @@ import { RegisterDto, UserDto } from './usuario.model';
     InputTextModule,
     ToastModule,
     ConfirmDialogModule,
-    DropdownModule,
   ],
-  templateUrl: './usuario.component.html',
-  styleUrls: ['./usuario.component.scss'],
   providers: [ConfirmationService, MessageService],
+  templateUrl: './equipamento.component.html',
+  styleUrl: './equipamento.component.scss',
 })
-export class UsuarioComponent {
-  dados: UserDto[] = [];
-  dadosOriginais: UserDto[] = [];
+export class EquipamentoComponent {
+  dados: EquipamentDto[] = [];
+  dadosOriginais: EquipamentDto[] = [];
   displayDialog: boolean = false;
-  selectedItem: UserDto = {} as UserDto;
+  selectedItem: EquipamentDto = {} as EquipamentDto;
   isEditMode: boolean = false;
   dialogTitle: string = '';
-  usuarioForm: FormGroup;
-  globalFilterFields: string[] = ['id', 'name', 'login', 'role'];
+  equipamentoForm: FormGroup;
+  globalFilterFields: string[] = ['id', 'number', 'ownership', 'qrCode'];
   filters: { [key: string]: string } = {};
-  roles: string[] = [];
 
   canRead: boolean;
   canCreate: boolean;
@@ -56,33 +52,32 @@ export class UsuarioComponent {
 
   constructor(
     private fb: FormBuilder,
-    private usuarioService: UserService,
+    private equipamentoService: EquipamentoService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private router: Router
   ) {
-    this.usuarioForm = this.fb.group({
+    this.equipamentoForm = this.fb.group({
       id: [null],
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      login: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
-      role: ['', [Validators.required, Validators.maxLength(50)]],
+      number: ['', [Validators.required, Validators.maxLength(100)]],
+      ownership: ['', [Validators.required, Validators.maxLength(20)]],
+      qrCode: [''],
     });
 
     const userPermissions = JSON.parse(
       localStorage.getItem('permissions') || '[]'
     );
-    this.canRead = userPermissions.includes('user:read');
-    this.canCreate = userPermissions.includes('user:create');
-    this.canUpdate = userPermissions.includes('user:update');
-    this.canDelete = userPermissions.includes('user:delete');
+    this.canRead = userPermissions.includes('equipment:read');
+    this.canCreate = userPermissions.includes('equipment:create');
+    this.canUpdate = userPermissions.includes('equipment:update');
+    this.canDelete = userPermissions.includes('equipment:delete');
   }
 
   ngOnInit() {
-    this.getUsuarios();
-    this.getFuncoes();
+    this.getEquipamento();
   }
 
-  getUsuarios() {
+  getEquipamento() {
     if (!this.canRead) {
       this.messageService.add({
         severity: 'error',
@@ -92,7 +87,7 @@ export class UsuarioComponent {
       this.router.navigate(['/inicio']);
     }
 
-    this.usuarioService.getAllUsuarios().subscribe({
+    this.equipamentoService.getAllEquipamento().subscribe({
       next: (response) => {
         this.dados = response.sort((a, b) => {
           if (b.id === undefined || a.id === undefined) {
@@ -114,36 +109,25 @@ export class UsuarioComponent {
     });
   }
 
-  getFuncoes() {
-    this.usuarioService.getAllFuncoes().subscribe({
-      next: (response) => {
-        this.roles = response;
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
-
   openAddDialog() {
-    this.dialogTitle = 'Adicionar Usuário';
-    this.selectedItem = {} as UserDto;
+    this.dialogTitle = 'Adicionar Equipamento';
+    this.selectedItem = {} as EquipamentDto;
     this.isEditMode = false;
     this.displayDialog = true;
-    this.usuarioForm.reset();
+    this.equipamentoForm.reset();
   }
 
-  openEditDialog(item: UserDto) {
-    this.dialogTitle = 'Editar Usuário';
+  openEditDialog(item: EquipamentDto) {
+    this.dialogTitle = 'Editar Equipamento';
     this.selectedItem = { ...item };
     this.isEditMode = true;
     this.displayDialog = true;
-    this.usuarioForm.patchValue(this.selectedItem);
+    this.equipamentoForm.patchValue(this.selectedItem);
   }
 
   onSubmit() {
-    if (this.usuarioForm.valid) {
-      this.selectedItem = this.usuarioForm.value;
+    if (this.equipamentoForm.valid) {
+      this.selectedItem = this.equipamentoForm.value;
       this.saveItem();
     } else {
       this.messageService.add({
@@ -160,12 +144,12 @@ export class UsuarioComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: 'Você não tem permissão para atualizar usuários.',
+          detail: 'Você não tem permissão para atualizar equipamentos.',
         });
         return;
       }
 
-      this.usuarioService.updateUsuario(this.selectedItem).subscribe({
+      this.equipamentoService.updateEquipamento(this.selectedItem).subscribe({
         next: (response) => {
           const index = this.dados.findIndex(
             (d) => d.id === this.selectedItem.id
@@ -175,18 +159,17 @@ export class UsuarioComponent {
             this.messageService.add({
               severity: 'success',
               summary: 'Sucesso',
-              detail: 'Usuário atualizado com sucesso',
+              detail: 'Equipamento atualizado com sucesso',
             });
           }
           this.displayDialog = false;
-          this.getUsuarios();
         },
         error: (error) => {
           console.error(error);
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: 'Erro ao atualizar usuário',
+            detail: 'Erro ao atualizar equipamento',
           });
         },
       });
@@ -195,24 +178,19 @@ export class UsuarioComponent {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
-          detail: 'Você não tem permissão para adicionar usuários.',
+          detail: 'Você não tem permissão para adicionar equipamentos.',
         });
         return;
       }
 
-      const registerDto: RegisterDto = {
-        name: this.selectedItem.name,
-        login: this.selectedItem.login,
-        role: this.selectedItem.role,
-      };
-      this.usuarioService.createUsuario(registerDto).subscribe({
+      this.equipamentoService.createEquipamento(this.selectedItem).subscribe({
         next: (response) => {
           this.dados.push(response);
           this.dadosOriginais.push(response);
           this.messageService.add({
             severity: 'success',
             summary: 'Sucesso',
-            detail: 'Usuário adicionado com sucesso',
+            detail: 'Equipamento adicionado com sucesso',
           });
           this.displayDialog = false;
         },
@@ -221,18 +199,18 @@ export class UsuarioComponent {
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: 'Erro ao adicionar usuário',
+            detail: 'Erro ao adicionar equipamento',
           });
         },
       });
     }
   }
 
-  confirmacao(event: Event, item: UserDto) {
+  confirmacao(event: Event, item: EquipamentDto) {
     this.selectedItem = item;
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: 'Você deseja deletar esse usuário?',
+      message: 'Você deseja deletar esse equipamento?',
       header: 'Confirmar exclusão',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-text',
@@ -240,15 +218,60 @@ export class UsuarioComponent {
       acceptIcon: 'none',
       rejectIcon: 'none',
       accept: () => {
+        this.deleteItem(item);
       },
       reject: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Recusado',
-          detail: 'Usuário não deletado',
+          detail: 'Equipamento não deletado',
         });
       },
     });
+  }
+
+  deleteItem(item: EquipamentDto) {
+    if (
+      typeof item.id === 'number' &&
+      item.id !== null &&
+      item.id !== undefined
+    ) {
+      if (!this.canDelete) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Você não tem permissão para deletar equipamentos.',
+        });
+        return;
+      }
+      this.equipamentoService.deleteEquipamento(item.id).subscribe(
+        () => {
+          this.dados = this.dados.filter((d) => d.id !== item.id);
+          this.dadosOriginais = this.dadosOriginais.filter(
+            (d) => d.id !== item.id
+          );
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Confirmado',
+            detail: 'Equipamento deletado',
+          });
+        },
+        (error) => {
+          console.error(error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Erro ao deletar equipamento',
+          });
+        }
+      );
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'ID do equipamento é inválido',
+      });
+    }
   }
 
   applyFilter(event: Event, field: string) {

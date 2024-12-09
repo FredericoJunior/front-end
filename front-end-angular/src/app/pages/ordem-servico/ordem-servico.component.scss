@@ -1,0 +1,68 @@
+.body {
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 2.75rem;
+}
+
+.header {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header-table {
+    margin-bottom: 1rem;
+}
+
+.header-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.p-button-rounded {
+    margin-right: 0.5rem;
+}
+
+.p-button-sm .pi {
+    font-size: 0.875rem;
+}
+
+.p-button-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-salvar {
+    margin-left: 0.5rem;
+}
+
+.filter-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.criacaoFormulario {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.botao-manual {
+    margin-left: 0.5rem;
+}
