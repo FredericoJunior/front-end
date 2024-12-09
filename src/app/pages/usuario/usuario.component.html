@@ -33,24 +33,51 @@
           <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
           <th pSortableColumn="login">Login <p-sortIcon field="login" /></th>
           <th pSortableColumn="role">Função <p-sortIcon field="role" /></th>
-          <th pSortableColumn="createdAt">Data de Criação <p-sortIcon field="createdAt" /></th>
+          <th pSortableColumn="createdAt">
+            Data de Criação <p-sortIcon field="createdAt" />
+          </th>
           <th>Opções</th>
         </tr>
         <tr>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'id')" placeholder="Filtrar por ID" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'id')"
+              placeholder="Filtrar por ID"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'name')" placeholder="Filtrar por Nome" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'name')"
+              placeholder="Filtrar por Nome"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'login')" placeholder="Filtrar por Login" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'login')"
+              placeholder="Filtrar por Login"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'role')" placeholder="Filtrar por Função" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'role')"
+              placeholder="Filtrar por Função"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'createdAt')" placeholder="Filtrar por Data de Criação" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'createdAt')"
+              placeholder="Filtrar por Data de Criação"
+            />
           </th>
           <th></th>
         </tr>
@@ -126,10 +153,16 @@
               usuarioForm.controls['name'].touched)
           "
         >
-          <small class="p-error" *ngIf="usuarioForm.controls['name'].errors?.['required']">
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['name'].errors?.['required']"
+          >
             Nome é obrigatório.
           </small>
-          <small class="p-error" *ngIf="usuarioForm.controls['name'].errors?.['maxlength']">
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['name'].errors?.['maxlength']"
+          >
             Nome deve ter no máximo 100 caracteres.
           </small>
         </div>
@@ -148,20 +181,45 @@
         <div
           *ngIf="
             usuarioForm.controls['login'].invalid &&
-            (usuarioForm.controls['login'].dirty || usuarioForm.controls['login'].touched)
+            (usuarioForm.controls['login'].dirty ||
+              usuarioForm.controls['login'].touched)
           "
         >
-          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['required']">
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['required']"
+          >
             Login é obrigatório.
           </small>
-          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['email']">
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['email']"
+          >
             E-mail inválido.
           </small>
-          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['maxlength']">
+          <small
+            classs="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['maxlength']"
+          >
             Login deve ter no máximo 50 caracteres.
           </small>
         </div>
       </div>
+
+      <!-- Mostrar o checkbox de resetar senha apenas no modo de edição -->
+      <div class="formulario" *ngIf="isEditMode">
+        <label for="resetPassword" class="font-semibold w-6rem"
+          >Restaurar senha:
+        </label>
+        <p-checkbox
+          id="resetPassword"
+          formControlName="resetPassword"
+          binary="true"
+          [trueValue]="true"
+          [falseValue]="false"
+        ></p-checkbox>
+      </div>
+
       <div class="buttons">
         <p-button
           label="Cancelar"

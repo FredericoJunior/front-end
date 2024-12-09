@@ -12,6 +12,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import { MenuComponent } from '../menu/menu.component';
 
@@ -32,6 +33,7 @@ import { RegisterDto, UserDto } from './usuario.model';
     ToastModule,
     ConfirmDialogModule,
     DropdownModule,
+    CheckboxModule,
   ],
   templateUrl: './usuario.component.html',
   styleUrls: ['./usuario.component.scss'],
@@ -138,7 +140,13 @@ export class UsuarioComponent {
     this.selectedItem = { ...item };
     this.isEditMode = true;
     this.displayDialog = true;
-    this.usuarioForm.patchValue(this.selectedItem);
+    this.usuarioForm = this.fb.group({
+      id: [this.selectedItem.id],
+      name: [this.selectedItem.name, [Validators.required, Validators.maxLength(100)]],
+      login: [this.selectedItem.login, [Validators.required, Validators.email, Validators.maxLength(50)]],
+      role: [this.selectedItem.role, [Validators.required, Validators.maxLength(50)]],
+      resetPassword: [false],
+    });
   }
 
   onSubmit() {
@@ -215,6 +223,7 @@ export class UsuarioComponent {
             detail: 'Usuário adicionado com sucesso',
           });
           this.displayDialog = false;
+          this.getUsuarios();
         },
         error: (error) => {
           console.error(error);
@@ -228,28 +237,63 @@ export class UsuarioComponent {
     }
   }
 
-  confirmacao(event: Event, item: UserDto) {
-    this.selectedItem = item;
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Você deseja deletar esse usuário?',
-      header: 'Confirmar exclusão',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: 'p-button-danger p-button-text',
-      rejectButtonStyleClass: 'p-button-text p-button-text',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
-      accept: () => {
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Recusado',
-          detail: 'Usuário não deletado',
-        });
-      },
-    });
-  }
+  // confirmacao(event: Event, item: UserDto) {
+  //   this.selectedItem = item;
+  //   this.confirmationService.confirm({
+  //     target: event.target as EventTarget,
+  //     message: 'Você deseja deletar esse usuário?',
+  //     header: 'Confirmar exclusão',
+  //     icon: 'pi pi-info-circle',
+  //     acceptButtonStyleClass: 'p-button-danger p-button-text',
+  //     rejectButtonStyleClass: 'p-button-text p-button-text',
+  //     acceptIcon: 'none',
+  //     rejectIcon: 'none',
+  //     accept: () => {
+  //       this.deleteUsuario(); // Chama a função de deletar usuário
+  //     },
+  //     reject: () => {
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Recusado',
+  //         detail: 'Usuário não deletado',
+  //       });
+  //     },
+  //   });
+  // }
+
+  // deleteUsuario() {
+  //   if (!this.canDelete) {
+  //     this.messageService.add({
+  //       severity: 'error',
+  //       summary: 'Erro',
+  //       detail: 'Você não tem permissão para deletar usuários.',
+  //     });
+  //     return;
+  //   }
+
+  //   this.usuarioService.deleteUsuario(this.selectedItem.id).subscribe({
+  //     next: () => {
+  //       this.dados = this.dados.filter((d) => d.id !== this.selectedItem.id);
+  //       this.dadosOriginais = this.dadosOriginais.filter(
+  //         (d) => d.id !== this.selectedItem.id
+  //       );
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Sucesso',
+  //         detail: 'Usuário deletado com sucesso',
+  //       });
+  //       this.getUsuarios(); // Chama getUsuarios após a exclusão
+  //     },
+  //     error: (error) => {
+  //       console.error(error);
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Erro',
+  //         detail: 'Erro ao deletar usuário',
+  //       });
+  //     },
+  //   });
+  // }
 
   applyFilter(event: Event, field: string) {
     const input = event.target as HTMLInputElement;
