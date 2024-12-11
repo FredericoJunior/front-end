@@ -173,14 +173,16 @@ export class OrdemServicoComponent implements OnInit {
 
   openEditDialog(item: WorkOrderDto) {
     this.dialogTitle = 'Editar Ordem de Serviço';
-    this.ordemServicoForm.patchValue({
+    const ordem = {
       id: item.id,
-      equipamentNumber: item.equipament.number,
+      equipament: item.equipament.id,
       orderStatus: item.orderStatus,
       requestedServicesDescription: item.requestedServicesDescription,
-      requesterName: item.requester.name,
-      issueDate: item.issueDate
-    });
+      requesterName: item.requester.id,
+      hourMeter: item.hourMeter,
+      issueDate: new Date(item.issueDate)
+    }
+    this.ordemServicoForm.patchValue(ordem);
     this.displayDialog = true;
   }
 
