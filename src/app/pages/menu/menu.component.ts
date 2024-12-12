@@ -55,11 +55,11 @@ export class MenuComponent implements OnInit {
       //   icon: 'pi pi-info-circle',
       //   route: '/status-ordem-servico',
       // },
-      {
-        label: 'Notificações',
-        icon: 'pi pi-bell',
-        route: '/notificacao',
-      },
+      // {
+      //   label: 'Notificações',
+      //   icon: 'pi pi-bell',
+      //   route: '/notificacao',
+      // },
       {
         label: 'Logout',
         icon: 'pi pi-user',

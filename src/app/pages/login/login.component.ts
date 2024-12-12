@@ -47,6 +47,7 @@ export class LoginComponent {
 
     this.authService.login(authenticationDto).subscribe({
       next: (response) => {
+        console.log("🚀 ~ file: login.component.ts:50 ~ LoginComponent ~ this.authService.login ~ response:", response);
         const { accessToken, refreshToken } = response;
 
         localStorage.setItem('userName', response.userName);
@@ -58,13 +59,19 @@ export class LoginComponent {
         );
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('resetPassword', response.resetPassword);
 
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
           detail: 'Login realizado com sucesso!',
         });
-        this.router.navigate(['/inicio']);
+
+        if(response.resetPassword) {
+          this.router.navigate(['/alterar-senha']);
+        } else {
+          this.router.navigate(['/inicio']);
+        }
       },
       error: (error) => {
         this.messageService.add({

@@ -12,6 +12,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 import { RegistroService } from '../../services/registro.service';
 import { MenuComponent } from '../menu/menu.component';
+import { ReportsFilterDto } from './relatorio.models';
 
 @Component({
   selector: 'app-relatorio',
@@ -40,12 +41,15 @@ export class RelatorioComponent {
     private messageService: MessageService,
     private router: Router,
   ) {
+    const currentDate = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(currentDate.getMonth() - 1);
     this.relatorioForm = this.fb.group({
       startDate: [null, Validators.required],
       endDate: [null, Validators.required],
-      historico: [true],
-      custos: [true],
-      status: [true],
+      completedServices: [true],
+      closure: [true],
+      pendingServices: [true],
     });
 
     const userPermissions = JSON.parse(
@@ -87,6 +91,17 @@ export class RelatorioComponent {
     }
   }
 
+  getFormData(): ReportsFilterDto {
+    const formValue = this.relatorioForm.value;
+    return {
+      startDate: formValue.startDate.toISOString().split('T')[0] + ' 00:00:00',
+      endDate: formValue.endDate.toISOString().split('T')[0] + ' 23:59:59',
+      completedServices: formValue.completedServices,
+      closure: formValue.closure,
+      pendingServices: formValue.pendingServices,
+    };
+  }
+
   downloadExcelReport() {
     if (!this.canRead) {
       this.messageService.add({
@@ -97,7 +112,18 @@ export class RelatorioComponent {
       this.router.navigate(['/inicio']);
     }
 
-    this.registroService.getRelatorioExcel().subscribe({
+    if (this.relatorioForm.invalid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Por favor, preencha os campos de data corretamente.',
+      });
+      return;
+    }
+
+    const formData: ReportsFilterDto = this.getFormData();
+
+    this.registroService.getRelatorioExcel(formData).subscribe({
       next: (response) => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');
@@ -132,7 +158,18 @@ export class RelatorioComponent {
       this.router.navigate(['/inicio']);
     }
 
-    this.registroService.getRelatorioPdf().subscribe({
+    if (this.relatorioForm.invalid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Por favor, preencha os campos de data corretamente.',
+      });
+      return;
+    }
+
+    const formData: ReportsFilterDto = this.getFormData();
+
+    this.registroService.getRelatorioPdf(formData).subscribe({
       next: (response) => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');

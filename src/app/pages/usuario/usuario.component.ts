@@ -11,8 +11,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { PasswordModule } from 'primeng/password';
 import { DropdownModule } from 'primeng/dropdown';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import { MenuComponent } from '../menu/menu.component';
 
@@ -33,7 +33,7 @@ import { RegisterDto, UserDto } from './usuario.model';
     ToastModule,
     ConfirmDialogModule,
     DropdownModule,
-    PasswordModule,
+    CheckboxModule,
   ],
   templateUrl: './usuario.component.html',
   styleUrls: ['./usuario.component.scss'],
@@ -59,16 +59,14 @@ export class UsuarioComponent {
   constructor(
     private fb: FormBuilder,
     private usuarioService: UserService,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private router: Router
   ) {
     this.usuarioForm = this.fb.group({
       id: [null],
-      name: ['', Validators.required],
-      login: ['', Validators.required],
-      role: ['', Validators.required],
-      password: ['', Validators.required],
+      name: ['', [Validators.required, Validators.maxLength(100)]],
+      login: ['', [Validators.required, Validators.email, Validators.maxLength(50)]],
+      role: ['', [Validators.required, Validators.maxLength(50)]],
     });
 
     const userPermissions = JSON.parse(
@@ -97,8 +95,19 @@ export class UsuarioComponent {
 
     this.usuarioService.getAllUsuarios().subscribe({
       next: (response) => {
-        this.dados = response;
+        this.dados = response.sort((a, b) => {
+          if (b.id === undefined || a.id === undefined) {
+            return 0;
+          }
+          return b.id - a.id;
+        });
         this.dadosOriginais = [...response];
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Todos os dados foram carregados com sucesso.',
+        });
       },
       error: (error) => {
         console.error(error);
@@ -130,7 +139,12 @@ export class UsuarioComponent {
     this.selectedItem = { ...item };
     this.isEditMode = true;
     this.displayDialog = true;
-    this.usuarioForm.patchValue(this.selectedItem);
+    this.usuarioForm = this.fb.group({
+      id: [this.selectedItem.id],
+      name: [this.selectedItem.name, [Validators.required, Validators.maxLength(100)]],
+      login: [this.selectedItem.login, [Validators.required, Validators.email, Validators.maxLength(50)]],
+      role: [this.selectedItem.role, [Validators.required, Validators.maxLength(50)]],
+    });
   }
 
   onSubmit() {
@@ -171,6 +185,7 @@ export class UsuarioComponent {
             });
           }
           this.displayDialog = false;
+          this.getUsuarios();
         },
         error: (error) => {
           console.error(error);
@@ -194,7 +209,6 @@ export class UsuarioComponent {
       const registerDto: RegisterDto = {
         name: this.selectedItem.name,
         login: this.selectedItem.login,
-        password: this.selectedItem.password!,
         role: this.selectedItem.role,
       };
       this.usuarioService.createUsuario(registerDto).subscribe({
@@ -207,6 +221,7 @@ export class UsuarioComponent {
             detail: 'Usuário adicionado com sucesso',
           });
           this.displayDialog = false;
+          this.getUsuarios();
         },
         error: (error) => {
           console.error(error);
@@ -220,62 +235,63 @@ export class UsuarioComponent {
     }
   }
 
-  confirmacao(event: Event, item: UserDto) {
-    this.selectedItem = item;
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Você deseja deletar esse usuário?',
-      header: 'Confirmar exclusão',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: 'p-button-danger p-button-text',
-      rejectButtonStyleClass: 'p-button-text p-button-text',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
-      accept: () => {
-        this.deleteItem(item);
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Recusado',
-          detail: 'Usuário não deletado',
-        });
-      },
-    });
-  }
+  // confirmacao(event: Event, item: UserDto) {
+  //   this.selectedItem = item;
+  //   this.confirmationService.confirm({
+  //     target: event.target as EventTarget,
+  //     message: 'Você deseja deletar esse usuário?',
+  //     header: 'Confirmar exclusão',
+  //     icon: 'pi pi-info-circle',
+  //     acceptButtonStyleClass: 'p-button-danger p-button-text',
+  //     rejectButtonStyleClass: 'p-button-text p-button-text',
+  //     acceptIcon: 'none',
+  //     rejectIcon: 'none',
+  //     accept: () => {
+  //       this.deleteUsuario(); // Chama a função de deletar usuário
+  //     },
+  //     reject: () => {
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Recusado',
+  //         detail: 'Usuário não deletado',
+  //       });
+  //     },
+  //   });
+  // }
 
-  deleteItem(item: UserDto) {
-    if (!this.canDelete) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erro',
-        detail: 'Você não tem permissão para deletar usuários.',
-      });
-      return;
-    }
+  // deleteUsuario() {
+  //   if (!this.canDelete) {
+  //     this.messageService.add({
+  //       severity: 'error',
+  //       summary: 'Erro',
+  //       detail: 'Você não tem permissão para deletar usuários.',
+  //     });
+  //     return;
+  //   }
 
-    this.usuarioService.deleteUsuario(item.id).subscribe({
-      next: () => {
-        this.dados = this.dados.filter((d) => d.id !== item.id);
-        this.dadosOriginais = this.dadosOriginais.filter(
-          (d) => d.id !== item.id
-        );
-        this.messageService.add({
-          severity: 'info',
-          summary: 'Confirmado',
-          detail: 'Usuário deletado',
-        });
-      },
-      error: (error) => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Erro ao deletar usuário',
-        });
-      },
-    });
-  }
+  //   this.usuarioService.deleteUsuario(this.selectedItem.id).subscribe({
+  //     next: () => {
+  //       this.dados = this.dados.filter((d) => d.id !== this.selectedItem.id);
+  //       this.dadosOriginais = this.dadosOriginais.filter(
+  //         (d) => d.id !== this.selectedItem.id
+  //       );
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Sucesso',
+  //         detail: 'Usuário deletado com sucesso',
+  //       });
+  //       this.getUsuarios(); // Chama getUsuarios após a exclusão
+  //     },
+  //     error: (error) => {
+  //       console.error(error);
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Erro',
+  //         detail: 'Erro ao deletar usuário',
+  //       });
+  //     },
+  //   });
+  // }
 
   applyFilter(event: Event, field: string) {
     const input = event.target as HTMLInputElement;

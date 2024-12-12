@@ -89,8 +89,19 @@ export class EquipamentoComponent {
 
     this.equipamentoService.getAllEquipamento().subscribe({
       next: (response) => {
-        this.dados = response;
+        this.dados = response.sort((a, b) => {
+          if (b.id === undefined || a.id === undefined) {
+            return 0;
+          }
+          return b.id - a.id;
+        });
         this.dadosOriginais = [...response];
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Todos os dados foram carregados com sucesso.',
+        });
       },
       error: (error) => {
         console.error(error);
@@ -152,6 +163,7 @@ export class EquipamentoComponent {
             });
           }
           this.displayDialog = false;
+          this.getEquipamento();
         },
         error: (error) => {
           console.error(error);
@@ -182,6 +194,7 @@ export class EquipamentoComponent {
             detail: 'Equipamento adicionado com sucesso',
           });
           this.displayDialog = false;
+          this.getEquipamento();
         },
         error: (error) => {
           console.error(error);
@@ -244,6 +257,7 @@ export class EquipamentoComponent {
             summary: 'Confirmado',
             detail: 'Equipamento deletado',
           });
+          this.getEquipamento();
         },
         (error) => {
           console.error(error);

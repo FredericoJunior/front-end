@@ -89,6 +89,20 @@ export class OrdemServicoService {
     );
   }
 
+  createCompleteOrdemServico(dto: WorkOrderDto): Observable<WorkOrderDto> {
+    return this.http.post<WorkOrderDto>(`${this.apiUrl}create`, dto, {
+      headers: this.getHeaders(),
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 403) {
+          return this.handle403Error(() => this.createCompleteOrdemServico(dto));
+        } else {
+          return this.handleError(error);
+        }
+      })
+    );
+  }
+
   updateOrdemServico(dto: WorkOrderDto): Observable<WorkOrderDto> {
     return this.http.put<WorkOrderDto>(`${this.apiUrl}`, dto, {
       headers: this.getHeaders(),

@@ -33,24 +33,51 @@
           <th pSortableColumn="name">Nome <p-sortIcon field="name" /></th>
           <th pSortableColumn="login">Login <p-sortIcon field="login" /></th>
           <th pSortableColumn="role">Função <p-sortIcon field="role" /></th>
-          <th pSortableColumn="createdAt">Data de Criação <p-sortIcon field="createdAt" /></th>
+          <th pSortableColumn="createdAt">
+            Data de Criação <p-sortIcon field="createdAt" />
+          </th>
           <th>Opções</th>
         </tr>
         <tr>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'id')" placeholder="Filtrar por ID" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'id')"
+              placeholder="Filtrar por ID"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'name')" placeholder="Filtrar por Nome" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'name')"
+              placeholder="Filtrar por Nome"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'login')" placeholder="Filtrar por Login" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'login')"
+              placeholder="Filtrar por Login"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'role')" placeholder="Filtrar por Função" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'role')"
+              placeholder="Filtrar por Função"
+            />
           </th>
           <th>
-            <input pInputText type="text" (input)="applyFilter($event, 'createdAt')" placeholder="Filtrar por Data de Criação" />
+            <input
+              pInputText
+              type="text"
+              (input)="applyFilter($event, 'createdAt')"
+              placeholder="Filtrar por Data de Criação"
+            />
           </th>
           <th></th>
         </tr>
@@ -70,13 +97,13 @@
               title="Editar Usuário"
               (click)="openEditDialog(item)"
             ></button>
-            <button
+            <!-- <button
               pButton
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger p-button-sm"
               title="Deletar Usuário"
               (click)="confirmacao($event, item)"
-            ></button>
+            ></button> -->
           </td>
         </tr>
       </ng-template>
@@ -126,7 +153,18 @@
               usuarioForm.controls['name'].touched)
           "
         >
-          <small class="p-error">Nome é obrigatório.</small>
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['name'].errors?.['required']"
+          >
+            Nome é obrigatório.
+          </small>
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['name'].errors?.['maxlength']"
+          >
+            Nome deve ter no máximo 100 caracteres.
+          </small>
         </div>
       </div>
       <div class="formulario">
@@ -136,9 +174,9 @@
           id="login"
           class="flex-auto"
           type="email"
-          required email autocomplete="email"
           formControlName="login"
           autocomplete="off"
+          placeholder="Digite o login"
         />
         <div
           *ngIf="
@@ -147,33 +185,41 @@
               usuarioForm.controls['login'].touched)
           "
         >
-          <small class="p-error">Login é obrigatório.</small>
-          <small class="p-error" *ngIf="usuarioForm.controls['login'].errors?.['email']">E-mail inválido.</small>
-        </div>
-      </div>
-      <div class="formulario">
-        <label for="password" class="font-semibold w-6rem">Senha: </label>
-        <p-password
-          id="password"
-          [toggleMask]="true"
-          formControlName="password"
-          minlength="8"
-          autocomplete="off"
-          [feedback]="false"
-          class="flex-auto"
-        ></p-password>
-        <div
-          *ngIf="
-            usuarioForm.controls['password'].invalid &&
-            (usuarioForm.controls['password'].dirty ||
-              usuarioForm.controls['password'].touched)
-          "
-        >
-          <small class="p-error" *ngIf="usuarioForm.controls['password'].errors?.['minlength']">
-            A senha deve ter pelo menos 8 caracteres.
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['required']"
+          >
+            Login é obrigatório.
+          </small>
+          <small
+            class="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['email']"
+          >
+            E-mail inválido.
+          </small>
+          <small
+            classs="p-error"
+            *ngIf="usuarioForm.controls['login'].errors?.['maxlength']"
+          >
+            Login deve ter no máximo 50 caracteres.
           </small>
         </div>
       </div>
+
+      <!-- Mostrar o checkbox de resetar senha apenas no modo de edição -->
+      <!-- <div class="formulario" *ngIf="isEditMode">
+        <label for="resetPassword" class="font-semibold w-6rem"
+          >Restaurar senha:
+        </label>
+        <p-checkbox
+          id="resetPassword"
+          formControlName="resetPassword"
+          binary="true"
+          [trueValue]="true"
+          [falseValue]="false"
+        ></p-checkbox>
+      </div> -->
+
       <div class="buttons">
         <p-button
           label="Cancelar"

@@ -64,6 +64,20 @@ export class UserService {
     );
   }
 
+  getAllFuncoes(): Observable<string[]> {
+    return this.http
+      .get<string[]>(`${this.apiUrl}roles`, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          if (error.status === 403) {
+            return this.handle403Error(() => this.getAllFuncoes());
+          } else {
+            return this.handleError(error);
+          }
+        })
+      );
+  }
+
   createUsuario(registerDto: RegisterDto): Observable<UserDto> {
     return this.http
       .post<UserDto>(`${this.apiUrl}register`, registerDto, {
@@ -82,39 +96,11 @@ export class UserService {
 
   updateUsuario(userDto: UserDto): Observable<UserDto> {
     return this.http
-      .put<UserDto>(this.apiUrl, userDto, { headers: this.getHeaders() })
+      .put<UserDto>(`${this.apiUrl}update`, userDto, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
             return this.handle403Error(() => this.updateUsuario(userDto));
-          } else {
-            return this.handleError(error);
-          }
-        })
-      );
-  }
-
-  deleteUsuario(id: number): Observable<void> {
-    return this.http
-      .delete<void>(`${this.apiUrl}${id}`, { headers: this.getHeaders() })
-      .pipe(
-        catchError((error) => {
-          if (error.status === 403) {
-            return this.handle403Error(() => this.deleteUsuario(id));
-          } else {
-            return this.handleError(error);
-          }
-        })
-      );
-  }
-
-  getAllFuncoes(): Observable<string[]> {
-    return this.http
-      .get<string[]>(`${this.apiUrl}roles`, { headers: this.getHeaders() })
-      .pipe(
-        catchError((error) => {
-          if (error.status === 403) {
-            return this.handle403Error(() => this.getAllFuncoes());
           } else {
             return this.handleError(error);
           }
@@ -136,13 +122,27 @@ export class UserService {
       );
   }
 
-  getMecanicos(): Observable<UserDto[]> {
+  getAllMecanicos(): Observable<UserDto[]> {
     return this.http
       .get<UserDto[]>(`${this.apiUrl}mechanics`, { headers: this.getHeaders() })
       .pipe(
         catchError((error) => {
           if (error.status === 403) {
-            return this.handle403Error(() => this.getMecanicos());
+            return this.handle403Error(() => this.getAllMecanicos());
+          } else {
+            return this.handleError(error);
+          }
+        })
+      );
+  }
+
+  changePassword(newPassword: string): Observable<void> {
+    return this.http
+      .put<void>(`${this.apiUrl}change-password`, { password: newPassword }, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          if (error.status === 403) {
+            return this.handle403Error(() => this.changePassword(newPassword));
           } else {
             return this.handleError(error);
           }
